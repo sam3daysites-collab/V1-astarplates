@@ -9,7 +9,7 @@ import { breadcrumbSchema, serializeJsonLd } from "@/lib/schema";
 export const metadata = buildMetadata({
   title: "Premium UK Number Plates — Pressed Same Day",
   description:
-    "Road legal 2D, 3D Gel, 4D and 4D Gel number plates pressed to BS AU 145e. Same-day dispatch, document verified, free UK delivery on orders over £30.",
+    "Road legal 2D, 3D Gel, 4D and 4D Gel number plates pressed to BS AU 145e. Free next-day delivery on orders before 11am Mon–Sat, document verified.",
   path: "/",
 });
 
@@ -27,8 +27,8 @@ const trustPoints = [
     body: "Order before 2pm on a working day and your plates are pressed, printed and dispatched the same day.",
   },
   {
-    title: "Free UK delivery",
-    body: "Free tracked delivery on every UK order over £30. Next-day options available at checkout.",
+    title: "Free next-day delivery",
+    body: "Free DPD tracked next-day on every order placed before 11am Mon–Sat. No minimum spend, no extras.",
   },
 ];
 
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: "How fast will my plates arrive?",
-    a: "Order before 2pm Monday to Friday and we press and dispatch the same working day. Standard tracked UK delivery typically arrives within 1–2 working days. Next-day delivery is available at checkout.",
+    a: "Order before 11am Monday to Saturday and we press and dispatch your plates on the next working day's DPD run. Tracked, signed-for and free — no minimum spend.",
   },
   {
     q: "Can I use show plates on the road?",
@@ -319,11 +319,11 @@ function ComplianceStrip() {
             Step 3
           </p>
           <h3 className="mt-3 text-lg font-semibold text-neutral-900">
-            Tracked delivery
+            Free next-day delivery
           </h3>
           <p className="mt-2 text-sm text-neutral-600">
-            Free tracked UK delivery on orders over £30, with next-day options
-            at checkout. Most orders arrive within 1–2 working days.
+            DPD tracked next-day on every order placed before 11am Monday to
+            Saturday. No minimum spend.
           </p>
           <Link
             href="/delivery"

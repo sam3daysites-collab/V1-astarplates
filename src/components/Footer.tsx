@@ -13,13 +13,14 @@ const helpLinks = [
   { href: "/compliance", label: "Compliance & Law" },
   { href: "/documents-required", label: "Documents Required" },
   { href: "/delivery", label: "Delivery" },
+  { href: "/blog", label: "Guides" },
   { href: "/contact", label: "Contact" },
 ];
 
-const browseLinks = [
-  { href: "/road-legal-number-plates", label: "Road Legal Plates" },
-  { href: "/show-plates", label: "Show Plates (Not Road Legal)" },
-  { href: "/builder", label: "Plate Builder" },
+const legalLinks = [
+  { href: "/terms-and-conditions", label: "Terms & Conditions" },
+  { href: "/returns-refunds", label: "Returns & Refunds" },
+  { href: "/compliance", label: "Compliance" },
 ];
 
 export default function Footer() {
@@ -37,8 +38,8 @@ export default function Footer() {
             </span>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-white/60">
-            Premium UK number plates, pressed in-house to BS AU 145e. Road legal
-            plates, show plates and accessories — built fast, built right.
+            Premium UK number plates, pressed in-house to BS AU 145e. Road
+            legal plates, show plates and accessories — built fast, built right.
           </p>
           <p className="mt-4 text-xs text-white/40">
             UK number plate supplier. Document verification required for all
@@ -79,9 +80,9 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-white">Browse</h3>
+          <h3 className="text-sm font-semibold text-white">Legal</h3>
           <ul className="mt-4 space-y-2 text-sm">
-            {browseLinks.map((link) => (
+            {legalLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
@@ -100,7 +101,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-6 text-xs text-white/50 md:flex-row">
-          <p>© {year} A* Number Plates. All rights reserved.</p>
+          <p>© {year} ASTARNUMBERPLATES LIMITED. All rights reserved.</p>
           <p>Made in the UK · BS AU 145e compliant</p>
         </div>
       </div>

@@ -14,6 +14,7 @@ const secondaryLinks: { href: string; label: string }[] = [
   { href: "/compliance", label: "Compliance" },
   { href: "/documents-required", label: "Documents" },
   { href: "/delivery", label: "Delivery" },
+  { href: "/blog", label: "Guides" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -28,11 +29,11 @@ export default function Header({ className }: { className?: string }) {
       <div className="hidden border-b border-white/5 bg-black/40 text-xs text-white/70 md:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
           <p>
-            <span className="text-[#d4af37]">Same-day dispatch</span>
+            <span className="text-[#d4af37]">Free next-day delivery</span>
+            <span className="mx-2 text-white/30">|</span>
+            On orders before 11am Mon–Sat
             <span className="mx-2 text-white/30">|</span>
             BS AU 145e road legal plates
-            <span className="mx-2 text-white/30">|</span>
-            Free UK delivery on orders over £30
           </p>
           <div className="flex items-center gap-4">
             {secondaryLinks.map((link) => (

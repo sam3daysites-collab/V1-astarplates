@@ -138,16 +138,17 @@ export default function ProductPageBody({ product }: ProductPageBodyProps) {
               Same-day press
             </h3>
             <p className="mt-2 text-sm text-neutral-600">
-              Order before 2pm Mon–Fri and we&apos;ll press and dispatch your
-              plates the same day.
+              Order before 11am Mon–Sat and your plates go on the next
+              working day&apos;s DPD run.
             </p>
           </div>
           <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
             <h3 className="text-base font-semibold text-neutral-900">
-              Tracked UK delivery
+              Free next-day delivery
             </h3>
             <p className="mt-2 text-sm text-neutral-600">
-              Free over £30, next-day options available at checkout.
+              DPD tracked next-day, free on every order. No minimum spend, no
+              extras.
             </p>
           </div>
         </div>
