@@ -29,55 +29,72 @@ export default function PricingPage() {
         </header>
 
         <div className="mt-12 overflow-hidden rounded-2xl border border-neutral-200">
-          <table className="w-full divide-y divide-neutral-200 text-sm">
-            <thead className="bg-neutral-50 text-left">
-              <tr>
-                <th className="px-6 py-4 font-semibold text-neutral-900">
-                  Plate
-                </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900">
-                  Single
-                </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900">
-                  Pair
-                </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-200 bg-white">
-              {PLATE_PRODUCTS.map((p) => (
-                <tr key={p.id}>
-                  <td className="px-6 py-4">
-                    <Link
-                      href={`/${p.slug}`}
-                      className="font-medium text-neutral-900 hover:underline"
-                    >
-                      {p.name}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 text-neutral-700">
-                    {formatGBP(p.singlePence)}
-                  </td>
-                  <td className="px-6 py-4 text-neutral-700">
-                    {formatGBP(p.pairPence)}
-                  </td>
-                  <td className="px-6 py-4">
-                    {p.roadLegal ? (
-                      <span className="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-                        Road legal
-                      </span>
-                    ) : (
-                      <span className="inline-flex rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
-                        Show only
-                      </span>
-                    )}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] divide-y divide-neutral-200 text-sm">
+              <thead className="bg-neutral-50 text-left">
+                <tr>
+                  <th className="px-4 py-4 font-semibold text-neutral-900 sm:px-6">
+                    Plate
+                  </th>
+                  <th className="px-4 py-4 font-semibold text-neutral-900 sm:px-6">
+                    Single
+                  </th>
+                  <th className="px-4 py-4 font-semibold text-neutral-900 sm:px-6">
+                    Pair
+                  </th>
+                  <th className="px-4 py-4 font-semibold text-neutral-900 sm:px-6">
+                    Status
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-neutral-200 bg-white">
+                {PLATE_PRODUCTS.map((p) => (
+                  <tr key={p.id}>
+                    <td className="px-4 py-4 sm:px-6">
+                      <Link
+                        href={`/${p.slug}`}
+                        className="font-medium text-neutral-900 hover:underline"
+                      >
+                        {p.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-4 text-neutral-700 sm:px-6">
+                      {formatGBP(p.singlePence)}
+                    </td>
+                    <td className="px-4 py-4 text-neutral-700 sm:px-6">
+                      {formatGBP(p.pairPence)}
+                    </td>
+                    <td className="px-4 py-4 sm:px-6">
+                      {p.roadLegal ? (
+                        <span className="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                          Road legal
+                        </span>
+                      ) : (
+                        <span className="inline-flex rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+                          Show only
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <Link
+            href="/builder"
+            className="inline-flex items-center justify-center rounded-md bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700"
+          >
+            Build my plate
+          </Link>
+          <Link
+            href="/road-legal-number-plates"
+            className="text-sm font-semibold text-neutral-900 underline-offset-4 hover:underline"
+          >
+            Browse road legal plates →
+          </Link>
         </div>
 
         <h2 className="mt-16 text-xl font-semibold tracking-tight text-neutral-900">

@@ -7,7 +7,7 @@ import { formatGBP } from "@/lib/utils";
 export const metadata = buildMetadata({
   title: "Plate Builder — Design Your Number Plate",
   description:
-    "Design your plate live. Choose finish, badge, border and size — preview the exact number plate you&apos;ll receive before you order.",
+    "Design your plate live. Choose finish, badge, border and size — preview the exact number plate you'll receive before you order.",
   path: "/builder",
 });
 

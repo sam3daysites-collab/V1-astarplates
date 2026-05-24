@@ -18,9 +18,9 @@ interface PlatePreviewProps {
 }
 
 const SIZE_CLASSES: Record<NonNullable<PlatePreviewProps["size"]>, string> = {
-  sm: "h-14 text-2xl px-4",
-  md: "h-20 text-4xl px-5",
-  lg: "h-28 text-6xl px-7",
+  sm: "h-12 text-xl px-3 sm:h-14 sm:text-2xl sm:px-4",
+  md: "h-16 text-3xl px-4 sm:h-20 sm:text-4xl sm:px-5",
+  lg: "h-20 text-3xl px-4 sm:h-24 sm:text-5xl sm:px-6 md:h-28 md:text-6xl md:px-7",
 };
 
 const BASE_BG: Record<PlateStyle, string> = {

@@ -102,9 +102,24 @@ export default function DocumentsRequiredPage() {
           <p className="mt-3 text-neutral-700">
             We store your documents securely, encrypted at rest, only for as
             long as needed to verify your order and meet our legal obligations
-            as a plate supplier. We never share them with third parties. Full
-            details are in our privacy policy.
+            as a plate supplier. We never share them with third parties and we
+            process all data in line with UK GDPR.
           </p>
+        </div>
+
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <Link
+            href="/builder"
+            className="inline-flex items-center justify-center rounded-md bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700"
+          >
+            Start building
+          </Link>
+          <Link
+            href="/compliance"
+            className="text-sm font-semibold text-neutral-900 underline-offset-4 hover:underline"
+          >
+            Read our compliance →
+          </Link>
         </div>
       </div>
     </section>

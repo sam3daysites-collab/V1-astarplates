@@ -71,7 +71,21 @@ export default function ProductPageBody({ product }: ProductPageBodyProps) {
               </Link>
             </div>
 
-            {!product.roadLegal && (
+            {product.roadLegal ? (
+              <p className="mt-6 rounded-xl border border-[#d4af37]/40 bg-[#d4af37]/10 p-4 text-sm text-[#f4e4a1]">
+                <strong className="font-semibold text-white">
+                  Document verification required.
+                </strong>{" "}
+                UK law requires proof of ID and entitlement to the registration
+                before we press road legal plates.{" "}
+                <Link
+                  href="/documents-required"
+                  className="underline underline-offset-2"
+                >
+                  What you&apos;ll need →
+                </Link>
+              </p>
+            ) : (
               <p className="mt-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
                 <strong className="font-semibold">Not road legal.</strong> Show
                 plates are display-only. They must not be fitted to a vehicle

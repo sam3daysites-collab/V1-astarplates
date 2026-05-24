@@ -63,7 +63,7 @@ export default function Home() {
       <ProductGrid />
       <BuilderCallout />
       <ComplianceStrip />
-      <ProcessSection />
+      <FinalCTA />
       <FAQSection items={faqs} />
       <script
         type="application/ld+json"
@@ -214,7 +214,7 @@ function ProductGrid() {
             See all road legal plates →
           </Link>
         </div>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {PLATE_PRODUCTS.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -337,17 +337,38 @@ function ComplianceStrip() {
   );
 }
 
-function ProcessSection() {
+function FinalCTA() {
   return (
-    <section className="border-t border-neutral-200 bg-neutral-50 py-16">
-      <div className="mx-auto max-w-4xl px-6 text-center">
-        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
-          Trusted by thousands of UK drivers.
-        </h2>
-        <p className="mt-3 text-neutral-600">
-          Pressed properly. Sent fast. The same plates fitted to MOT bays and
-          main dealer forecourts.
+    <section className="relative overflow-hidden bg-black text-white">
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(50%_60%_at_50%_50%,rgba(212,175,55,0.16),transparent_70%)]"
+      />
+      <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 py-20 text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#d4af37]">
+          Ready when you are
         </p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+          Built today. On your car this week.
+        </h2>
+        <p className="mt-4 max-w-xl text-white/70">
+          Design your plate in under a minute, upload your documents and
+          we&apos;ll press, QC and dispatch the same working day.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/builder"
+            className="inline-flex items-center justify-center rounded-md bg-[#d4af37] px-6 py-3 text-sm font-semibold text-black transition hover:bg-[#e6c14d]"
+          >
+            Build my plate
+          </Link>
+          <Link
+            href="/contact"
+            className="inline-flex items-center justify-center rounded-md border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/40"
+          >
+            Talk to us
+          </Link>
+        </div>
       </div>
     </section>
   );

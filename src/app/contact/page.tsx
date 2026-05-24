@@ -3,7 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Contact A* Number Plates",
   description:
-    "Talk to our team about an order, a custom design or a trade account. UK-based support, 7 days a week.",
+    "Talk to our team about an order, a custom design or a trade account. UK-based support, six days a week.",
   path: "/contact",
 });
 
@@ -58,6 +58,14 @@ export default function ContactPage() {
                 Monday–Friday 9am–6pm
                 <br />
                 Saturday 10am–4pm
+              </p>
+              <p className="mt-3 text-sm">
+                <a
+                  href="mailto:admin@astarnumberplates.uk"
+                  className="font-medium text-neutral-900 underline-offset-4 hover:underline"
+                >
+                  admin@astarnumberplates.uk
+                </a>
               </p>
             </div>
             <div className="rounded-2xl border border-neutral-200 p-6">

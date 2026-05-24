@@ -49,7 +49,7 @@ export default function CompliancePage() {
 
       <section className="bg-white">
         <div className="mx-auto max-w-4xl px-6 py-16">
-          <div className="prose prose-neutral max-w-none">
+          <div>
             <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
               What we comply with
             </h2>

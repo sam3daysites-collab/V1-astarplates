@@ -16,9 +16,10 @@ const helpLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-const legalLinks = [
+const browseLinks = [
   { href: "/road-legal-number-plates", label: "Road Legal Plates" },
   { href: "/show-plates", label: "Show Plates (Not Road Legal)" },
+  { href: "/builder", label: "Plate Builder" },
 ];
 
 export default function Footer() {
@@ -40,8 +41,8 @@ export default function Footer() {
             plates, show plates and accessories — built fast, built right.
           </p>
           <p className="mt-4 text-xs text-white/40">
-            Registered DVLA-style supplier. Document verification required for
-            all road legal plates.
+            UK number plate supplier. Document verification required for all
+            road legal plates.
           </p>
         </div>
 
@@ -78,9 +79,9 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-white">Legal</h3>
+          <h3 className="text-sm font-semibold text-white">Browse</h3>
           <ul className="mt-4 space-y-2 text-sm">
-            {legalLinks.map((link) => (
+            {browseLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
