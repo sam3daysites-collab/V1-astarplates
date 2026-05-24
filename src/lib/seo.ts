@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const SITE_NAME = "A* Number Plates";
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://astarplates.co.uk";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://astarnumberplates.uk";
 export const SITE_DESCRIPTION =
   "Premium UK number plates — road legal 2D, 3D Gel, 4D and 4D Gel plates pressed to BS AU 145e. Same-day dispatch, document-verified.";
 export const SITE_KEYWORDS = [
