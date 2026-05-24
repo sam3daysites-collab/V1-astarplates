@@ -24,7 +24,11 @@ const sampleLines = [
 
 export default function CartPage() {
   const summary = calculateCartTotal(
-    sampleLines.map((l) => ({ productId: l.productId, qty: l.qty })),
+    sampleLines.map((l) => ({
+      productId: l.productId,
+      qty: l.qty,
+      mode: "road-legal" as const,
+    })),
   );
 
   return (

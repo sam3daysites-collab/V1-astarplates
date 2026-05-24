@@ -29,7 +29,7 @@ export interface Article {
 
 export const ARTICLES: Article[] = [
   {
-    slug: "uk-number-plate-sizes-explained",
+    slug: "uk-number-plate-sizes-standard-short-import",
     title: "UK Number Plate Sizes Explained",
     description:
       "Standard, square, motorbike and import sizes — which plate fits your car and what the law actually requires.",
@@ -299,7 +299,7 @@ export const ARTICLES: Article[] = [
     ],
   },
   {
-    slug: "2d-vs-3d-vs-4d-vs-4d-gel",
+    slug: "2d-vs-3d-vs-4d-number-plates",
     title: "2D vs 3D vs 4D vs 4D Gel — The Full Comparison",
     description:
       "Four finishes, one plate. How they're made, how they look, what they cost and which is right for your car.",
@@ -395,7 +395,7 @@ export const ARTICLES: Article[] = [
     ],
   },
   {
-    slug: "how-to-fit-number-plates",
+    slug: "how-to-fit-number-plates-pads-vs-screws",
     title: "How to Fit Your Number Plates",
     description:
       "Screws vs sticky strips, alignment, and a five-minute fitting walkthrough.",
@@ -481,7 +481,7 @@ export const ARTICLES: Article[] = [
     ],
   },
   {
-    slug: "private-reg-on-show-plate",
+    slug: "private-reg-show-plates-uk",
     title: "Can I Put My Private Reg on a Show Plate?",
     description:
       "Putting a private registration on a custom show plate — what's allowed, what isn't and how to display it legally.",
@@ -517,7 +517,7 @@ export const ARTICLES: Article[] = [
     ],
   },
   {
-    slug: "v750-v778-number-plates",
+    slug: "v750-v778-documents-explained",
     title: "V750 and V778 — Number Plate Entitlement Documents",
     description:
       "The two DVLA documents that prove you own a private registration, and which one to upload when you order plates.",

@@ -8,20 +8,33 @@ import PlatePreview, {
 } from "@/components/PlatePreview";
 import {
   ACCESSORY_LIST,
+  defaultStripPacks,
+  fixingKitPenceFor,
   type AccessoryId,
   type SelectedAccessory,
 } from "@/lib/accessories";
 import { PLATE_PRODUCTS, type PlateProduct } from "@/lib/products";
 import {
   calculateCartTotal,
+  SHOW_FLAG_FEE_PENCE,
   type CartLine,
+  type PlateMode,
   type PlateQuantity,
 } from "@/lib/pricing";
+import {
+  DEFAULT_SIZE_ID,
+  PLATE_SIZES,
+  positionAllowsSize,
+  type PlatePosition,
+  type PlateSize,
+} from "@/lib/sizes";
+import { COUNTRIES, findCountry } from "@/lib/countries";
 import { DELIVERY } from "@/lib/policies";
 import { formatGBP, normalisePlateInput } from "@/lib/utils";
 
 type StepId =
   | "reg"
+  | "mode"
   | "style"
   | "type"
   | "size"
@@ -29,8 +42,9 @@ type StepId =
   | "extras"
   | "review";
 
-const STEPS: { id: StepId; label: string }[] = [
+const STEPS_ROAD_LEGAL: { id: StepId; label: string }[] = [
   { id: "reg", label: "Reg" },
+  { id: "mode", label: "Mode" },
   { id: "style", label: "Style" },
   { id: "type", label: "Plate Type" },
   { id: "size", label: "Size" },
@@ -39,10 +53,8 @@ const STEPS: { id: StepId; label: string }[] = [
   { id: "review", label: "Review" },
 ];
 
-type PlateType = "pair" | "front-only" | "rear-only";
-
 const PLATE_TYPE_OPTIONS: {
-  id: PlateType;
+  id: PlatePosition;
   label: string;
   sub: string;
   recommended?: boolean;
@@ -56,28 +68,16 @@ const PLATE_TYPE_OPTIONS: {
   {
     id: "front-only",
     label: "Front Only",
-    sub: "Single white plate",
+    sub: "Single reflective white plate",
   },
   {
     id: "rear-only",
     label: "Rear Only",
-    sub: "Single yellow plate",
+    sub: "Single reflective yellow plate",
   },
 ];
 
-// V1 ships with one customer-selectable size. Custom sizes go through support
-// until pricing and fulfilment are confirmed — see SIZE_NOTE below.
-const STANDARD_SIZE = {
-  id: "standard" as const,
-  label: "Standard UK Car Plate",
-  dimensions: "520 × 111mm",
-  note: "The default plate fitted to almost every UK road car.",
-};
-
-const SIZE_CONTACT_NOTE =
-  "Need a short, import, motorcycle or custom size? Contact us before ordering so we can confirm fitment.";
-
-const FLAG_OPTIONS: { id: PlateFlag; label: string; sub: string }[] = [
+const ROAD_LEGAL_FLAG_OPTIONS: { id: PlateFlag; label: string; sub: string }[] = [
   { id: "none", label: "No flag", sub: "Blank left side. Default." },
   { id: "UK", label: "UK", sub: "Current identifier (post-2021)" },
   { id: "GB", label: "GB", sub: "Pre-2021 identifier, still permitted" },
@@ -86,17 +86,41 @@ const FLAG_OPTIONS: { id: PlateFlag; label: string; sub: string }[] = [
   { id: "CYM", label: "CYM", sub: "Wales / Cymru" },
 ];
 
-function plateTypeToQuantity(t: PlateType): PlateQuantity {
+function plateTypeToQuantity(t: PlatePosition): PlateQuantity {
   if (t === "pair") return "pair";
   if (t === "front-only") return "single-front";
   return "single-rear";
 }
 
-function frontIncluded(t: PlateType) {
+function frontIncluded(t: PlatePosition) {
   return t !== "rear-only";
 }
-function rearIncluded(t: PlateType) {
+function rearIncluded(t: PlatePosition) {
   return t !== "front-only";
+}
+
+function validateReg(
+  raw: string,
+  mode: PlateMode,
+  size: PlateSize,
+): string | null {
+  const clean = normalisePlateInput(raw);
+  if (clean.length === 0) return "Please enter a registration";
+  const noSpaces = clean.replace(/\s/g, "");
+  if (mode === "road-legal") {
+    if (!/^[A-Z0-9 ]+$/.test(clean)) return "Only letters and numbers allowed";
+    if (noSpaces.length > size.roadLegalMaxChars) {
+      return `Road legal ${size.label.toLowerCase()} plates support up to ${size.roadLegalMaxChars} characters`;
+    }
+  } else {
+    if (noSpaces.length > 10) {
+      return "Maximum 10 characters for show plates (excluding spaces)";
+    }
+    if (clean.length > 12) {
+      return "Maximum 12 characters total";
+    }
+  }
+  return null;
 }
 
 interface BuilderFormProps {
@@ -111,11 +135,14 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
 
   const [stepIndex, setStepIndex] = useState(0);
   const [reg, setReg] = useState("");
+  const [mode, setMode] = useState<PlateMode>("road-legal");
   const [styleId, setStyleId] = useState<PlateStyle>(
     defaultProduct.id as PlateStyle,
   );
-  const [plateType, setPlateType] = useState<PlateType>("pair");
+  const [plateType, setPlateType] = useState<PlatePosition>("pair");
+  const [sizeId, setSizeId] = useState<string>(DEFAULT_SIZE_ID);
   const [flag, setFlag] = useState<PlateFlag>("none");
+  const [flagCountry, setFlagCountry] = useState<string>("");
   const [accessoryState, setAccessoryState] = useState<
     Record<AccessoryId, { selected: boolean; quantity: number }>
   >(() =>
@@ -134,22 +161,53 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
     [styleId, defaultProduct],
   );
 
+  const size = useMemo(
+    () => PLATE_SIZES.find((s) => s.id === sizeId) ?? PLATE_SIZES[0],
+    [sizeId],
+  );
+
   const cleanReg = useMemo(() => normalisePlateInput(reg), [reg]);
   const isPlaceholder = cleanReg.length === 0;
   const displayReg = isPlaceholder ? "AB12 CDE" : cleanReg;
+  const regError = useMemo(
+    () => (reg.length === 0 ? null : validateReg(reg, mode, size)),
+    [reg, mode, size],
+  );
+
+  // If the chosen plate-type isn't compatible with the size, snap to a valid type.
+  const safePlateType = useMemo<PlatePosition>(() => {
+    if (positionAllowsSize(plateType, size)) return plateType;
+    if (size.allowedPositions.includes("front")) return "front-only";
+    if (size.allowedPositions.includes("rear")) return "rear-only";
+    return "pair";
+  }, [plateType, size]);
+
+  // Adjust default strip pack count to match position.
+  const stripsDefault = defaultStripPacks(safePlateType);
 
   const selectedAccessories: SelectedAccessory[] = useMemo(
     () =>
-      ACCESSORY_LIST.filter((a) => accessoryState[a.id]?.selected).map((a) => ({
-        id: a.id,
-        quantity: accessoryState[a.id].quantity,
-      })),
-    [accessoryState],
+      ACCESSORY_LIST.filter((a) => accessoryState[a.id]?.selected).map((a) => {
+        const qty =
+          a.id === "adhesive-strips" &&
+          accessoryState[a.id].quantity === a.defaultQuantity
+            ? stripsDefault
+            : accessoryState[a.id].quantity;
+        return { id: a.id, quantity: qty };
+      }),
+    [accessoryState, stripsDefault],
   );
 
   const cartLines: CartLine[] = useMemo(
-    () => [{ productId: product.id, qty: plateTypeToQuantity(plateType) }],
-    [product.id, plateType],
+    () => [
+      {
+        productId: product.id,
+        qty: plateTypeToQuantity(safePlateType),
+        mode,
+        flagCountryCode: mode === "show" ? flagCountry || undefined : undefined,
+      },
+    ],
+    [product.id, safePlateType, mode, flagCountry],
   );
 
   const summary = useMemo(
@@ -160,15 +218,29 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
   const cartHref = useMemo(() => {
     const params = new URLSearchParams();
     params.set("style", product.id);
-    params.set("plateType", plateType);
-    params.set("size", STANDARD_SIZE.id);
-    params.set("flag", flag);
+    params.set("mode", mode);
+    params.set("plateType", safePlateType);
+    params.set("size", sizeId);
+    if (mode === "road-legal") {
+      params.set("flag", flag);
+    } else if (flagCountry) {
+      params.set("country", flagCountry);
+    }
     if (cleanReg) params.set("reg", cleanReg);
     selectedAccessories.forEach((a) => {
       params.set(a.id, String(a.quantity));
     });
     return `/cart?${params.toString()}`;
-  }, [product.id, plateType, flag, cleanReg, selectedAccessories]);
+  }, [
+    product.id,
+    mode,
+    safePlateType,
+    sizeId,
+    flag,
+    flagCountry,
+    cleanReg,
+    selectedAccessories,
+  ]);
 
   function toggleAccessory(id: AccessoryId) {
     setAccessoryState((s) => ({
@@ -180,16 +252,21 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
   function setAccessoryQty(id: AccessoryId, qty: number) {
     setAccessoryState((s) => ({
       ...s,
-      [id]: { ...s[id], quantity: Math.max(1, Math.min(qty, 5)) },
+      [id]: {
+        ...s[id],
+        quantity: Math.max(1, Math.min(qty, 10)),
+      },
     }));
   }
 
+  const STEPS = STEPS_ROAD_LEGAL;
   const currentStep = STEPS[stepIndex];
   const isLastStep = stepIndex === STEPS.length - 1;
   const isFirstStep = stepIndex === 0;
+  const canAddToCart = !regError; // requires a valid (non-empty) reg
 
   return (
-    <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
+    <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-8">
       <div className="space-y-8 lg:pr-2">
         <StepNav
           current={stepIndex}
@@ -201,26 +278,56 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
           displayReg={displayReg}
           isPlaceholder={isPlaceholder}
           styleId={styleId}
+          mode={mode}
           flag={flag}
-          plateType={plateType}
+          countryCode={flagCountry}
+          countryName={findCountry(flagCountry)?.name}
+          plateType={safePlateType}
         />
 
-        <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8">
           {currentStep.id === "reg" && (
-            <RegStep value={reg} onChange={setReg} cleanReg={cleanReg} />
+            <RegStep
+              value={reg}
+              onChange={setReg}
+              cleanReg={cleanReg}
+              error={regError}
+              mode={mode}
+              size={size}
+            />
+          )}
+          {currentStep.id === "mode" && (
+            <ModeStep value={mode} onSelect={setMode} />
           )}
           {currentStep.id === "style" && (
             <StyleStep value={styleId} onSelect={setStyleId} />
           )}
           {currentStep.id === "type" && (
-            <PlateTypeStep value={plateType} onSelect={setPlateType} />
+            <PlateTypeStep
+              value={safePlateType}
+              size={size}
+              onSelect={setPlateType}
+            />
           )}
-          {currentStep.id === "size" && <SizeStep />}
+          {currentStep.id === "size" && (
+            <SizeStep
+              value={sizeId}
+              plateType={safePlateType}
+              onSelect={setSizeId}
+            />
+          )}
           {currentStep.id === "flag" && (
-            <FlagStep value={flag} onSelect={setFlag} />
+            <FlagStep
+              mode={mode}
+              roadLegalValue={flag}
+              onRoadLegalSelect={setFlag}
+              showValue={flagCountry}
+              onShowSelect={setFlagCountry}
+            />
           )}
           {currentStep.id === "extras" && (
             <ExtrasStep
+              plateType={safePlateType}
               state={accessoryState}
               onToggle={toggleAccessory}
               onQty={setAccessoryQty}
@@ -231,10 +338,14 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
               displayReg={displayReg}
               isPlaceholder={isPlaceholder}
               product={product}
-              plateType={plateType}
+              mode={mode}
+              plateType={safePlateType}
+              size={size}
               flag={flag}
+              countryCode={flagCountry}
               selectedAccessories={selectedAccessories}
               summary={summary}
+              regError={regError}
             />
           )}
 
@@ -243,15 +354,20 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
               type="button"
               disabled={isFirstStep}
               onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
-              className="inline-flex items-center justify-center rounded-md border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center justify-center rounded-lg border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
             >
               ← Back
             </button>
 
             {isLastStep ? (
               <Link
-                href={cartHref}
-                className="inline-flex items-center justify-center rounded-md bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700"
+                href={canAddToCart ? cartHref : "#"}
+                aria-disabled={!canAddToCart}
+                className={`inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold text-white transition ${
+                  canAddToCart
+                    ? "bg-[var(--brand-lime)] hover:bg-[var(--brand-lime-hover)]"
+                    : "pointer-events-none bg-neutral-400"
+                }`}
               >
                 Add configured plate to cart — {formatGBP(summary.total)}
               </Link>
@@ -261,7 +377,7 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
                 onClick={() =>
                   setStepIndex((i) => Math.min(STEPS.length - 1, i + 1))
                 }
-                className="inline-flex items-center justify-center rounded-md bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700"
+                className="inline-flex items-center justify-center rounded-lg bg-[var(--brand-lime)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-lime-hover)]"
               >
                 Next →
               </button>
@@ -269,7 +385,7 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
           </div>
         </div>
 
-        {product.roadLegal ? (
+        {mode === "road-legal" ? (
           <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
             <strong className="font-semibold">Document verification required.</strong>{" "}
             Road legal plates only enter production after we verify your ID and
@@ -295,16 +411,20 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
             displayReg={displayReg}
             isPlaceholder={isPlaceholder}
             product={product}
-            plateType={plateType}
+            mode={mode}
+            plateType={safePlateType}
+            size={size}
             flag={flag}
+            countryCode={flagCountry}
             selectedAccessories={selectedAccessories}
             summary={summary}
             cartHref={cartHref}
+            canAddToCart={canAddToCart}
           />
         </div>
       </aside>
 
-      {/* Mobile sticky bottom bar + collapsible summary */}
+      {/* Mobile sticky bottom bar */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white shadow-[0_-12px_30px_-20px_rgba(0,0,0,0.4)] lg:hidden">
         {mobileSummaryOpen && (
           <div className="max-h-[60vh] overflow-y-auto border-b border-neutral-200 px-4 py-4">
@@ -312,11 +432,15 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
               displayReg={displayReg}
               isPlaceholder={isPlaceholder}
               product={product}
-              plateType={plateType}
+              mode={mode}
+              plateType={safePlateType}
+              size={size}
               flag={flag}
+              countryCode={flagCountry}
               selectedAccessories={selectedAccessories}
               summary={summary}
               cartHref={cartHref}
+              canAddToCart={canAddToCart}
               compact
             />
           </div>
@@ -335,15 +459,18 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
             </span>
           </button>
           <Link
-            href={cartHref}
-            className="inline-flex flex-1 items-center justify-center rounded-md bg-neutral-900 px-4 py-3 text-sm font-semibold text-white"
+            href={canAddToCart ? cartHref : "#"}
+            aria-disabled={!canAddToCart}
+            className={`inline-flex flex-1 items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold text-white ${
+              canAddToCart
+                ? "bg-[var(--brand-lime)]"
+                : "pointer-events-none bg-neutral-400"
+            }`}
           >
             Add to cart
           </Link>
         </div>
       </div>
-
-      {/* Spacer so content doesn't sit under the fixed mobile bar */}
       <div aria-hidden className="h-24 lg:hidden" />
     </div>
   );
@@ -376,7 +503,7 @@ function StepNav({
                 onClick={() => onSelect(idx)}
                 className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
                   isActive
-                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    ? "border-[var(--brand-lime)] bg-[var(--brand-lime)] text-white"
                     : isDone
                       ? "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
                       : "border-neutral-200 bg-neutral-50 text-neutral-500 hover:border-neutral-900"
@@ -385,7 +512,7 @@ function StepNav({
                 <span
                   className={`grid h-5 w-5 place-items-center rounded-full text-[10px] font-semibold ${
                     isActive
-                      ? "bg-white text-neutral-900"
+                      ? "bg-white text-[var(--brand-lime)]"
                       : isDone
                         ? "bg-emerald-600 text-white"
                         : "bg-neutral-200 text-neutral-700"
@@ -412,29 +539,45 @@ function PreviewPanel({
   displayReg,
   isPlaceholder,
   styleId,
+  mode,
   flag,
+  countryCode,
+  countryName,
   plateType,
 }: {
   displayReg: string;
   isPlaceholder: boolean;
   styleId: PlateStyle;
+  mode: PlateMode;
   flag: PlateFlag;
-  plateType: PlateType;
+  countryCode: string;
+  countryName?: string;
+  plateType: PlatePosition;
 }) {
-  const showLegal = styleId === "show";
   const showFront = frontIncluded(plateType);
   const showRear = rearIncluded(plateType);
   return (
-    <div className="rounded-3xl border border-neutral-200 bg-black p-6 text-white sm:p-8">
+    <div className="rounded-2xl border border-neutral-200 bg-[var(--brand-lime)] p-6 text-white sm:p-8">
       <div className="flex items-center justify-between">
-        <p className="text-xs uppercase tracking-[0.3em] text-white/40">
+        <p className="text-xs uppercase tracking-[0.3em] text-white/50">
           Live preview
         </p>
-        {isPlaceholder && (
-          <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
-            Example reg
-          </p>
-        )}
+        <div className="flex items-center gap-3">
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+              mode === "show"
+                ? "bg-red-500/20 text-red-200 ring-1 ring-red-400/40"
+                : "bg-emerald-500/20 text-emerald-200 ring-1 ring-emerald-400/40"
+            }`}
+          >
+            {mode === "show" ? "Show" : "Road legal"}
+          </span>
+          {isPlaceholder && (
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">
+              Example reg
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="mt-8 flex flex-col items-center gap-6">
@@ -442,22 +585,26 @@ function PreviewPanel({
           <PlatePreview
             registration={displayReg}
             style={styleId}
+            mode={mode}
             flag={flag}
+            showCountryCode={countryCode || undefined}
+            showCountryName={countryName}
             size="lg"
             position="front"
             showPositionLabel={plateType === "pair"}
-            showLegalWarning={showLegal}
           />
         )}
         {showRear && (
           <PlatePreview
             registration={displayReg}
             style={styleId}
+            mode={mode}
             flag={flag}
+            showCountryCode={countryCode || undefined}
+            showCountryName={countryName}
             size="lg"
             position="rear"
             showPositionLabel={plateType === "pair"}
-            showLegalWarning={showLegal}
           />
         )}
       </div>
@@ -467,7 +614,7 @@ function PreviewPanel({
 
 /* -------------------------- summary -------------------------- */
 
-function plateTypeLabel(t: PlateType) {
+function plateTypeLabel(t: PlatePosition) {
   return PLATE_TYPE_OPTIONS.find((o) => o.id === t)?.label ?? t;
 }
 
@@ -475,21 +622,29 @@ function SummaryCard({
   displayReg,
   isPlaceholder,
   product,
+  mode,
   plateType,
+  size,
   flag,
+  countryCode,
   selectedAccessories,
   summary,
   cartHref,
+  canAddToCart,
   compact = false,
 }: {
   displayReg: string;
   isPlaceholder: boolean;
   product: PlateProduct;
-  plateType: PlateType;
+  mode: PlateMode;
+  plateType: PlatePosition;
+  size: PlateSize;
   flag: PlateFlag;
+  countryCode: string;
   selectedAccessories: SelectedAccessory[];
   summary: ReturnType<typeof calculateCartTotal>;
   cartHref: string;
+  canAddToCart: boolean;
   compact?: boolean;
 }) {
   return (
@@ -506,28 +661,39 @@ function SummaryCard({
         <SummaryRow label="Registration">
           <span className="font-mono">{displayReg}</span>
           {isPlaceholder && (
-            <span className="ml-1 text-[11px] text-neutral-500">
-              (example)
+            <span className="ml-1 text-[11px] text-neutral-500">(example)</span>
+          )}
+        </SummaryRow>
+        <SummaryRow label="Mode">
+          {mode === "show" ? (
+            <span className="inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700">
+              Show — not road legal
+            </span>
+          ) : (
+            <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+              Road legal
             </span>
           )}
         </SummaryRow>
-        <SummaryRow label="Style">
-          {product.shortName}
-          {!product.roadLegal && (
-            <span className="ml-2 inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700">
-              Show only
-            </span>
-          )}
-        </SummaryRow>
+        <SummaryRow label="Style">{product.shortName}</SummaryRow>
         <SummaryRow label="Plate type">{plateTypeLabel(plateType)}</SummaryRow>
         <SummaryRow label="Size">
-          {STANDARD_SIZE.label}
+          {size.label}
           <span className="block text-[11px] text-neutral-500">
-            {STANDARD_SIZE.dimensions}
+            {size.dimensions}
           </span>
         </SummaryRow>
         <SummaryRow label="Flag">
-          {flag === "none" ? "No flag" : flag}
+          {mode === "show"
+            ? findCountry(countryCode)?.name ?? "No country"
+            : flag === "none"
+              ? "No flag"
+              : flag}
+          {mode === "show" && countryCode && (
+            <span className="block text-[11px] text-neutral-500">
+              +{formatGBP(SHOW_FLAG_FEE_PENCE)} per plate
+            </span>
+          )}
         </SummaryRow>
         <SummaryRow label="Add-ons">
           {selectedAccessories.length === 0 ? (
@@ -537,16 +703,20 @@ function SummaryCard({
               {selectedAccessories.map((a) => {
                 const accessory = ACCESSORY_LIST.find((x) => x.id === a.id);
                 if (!accessory) return null;
+                const lineTotal = accessory.positionPriced
+                  ? fixingKitPenceFor(plateType)
+                  : accessory.pricePence * a.quantity;
                 return (
                   <li
                     key={a.id}
                     className="flex items-baseline justify-between gap-2"
                   >
                     <span>
-                      {accessory.shortName} × {a.quantity}
+                      {accessory.shortName}
+                      {!accessory.positionPriced && ` × ${a.quantity}`}
                     </span>
                     <span className="text-xs text-neutral-500">
-                      {formatGBP(accessory.pricePence * a.quantity)}
+                      {formatGBP(lineTotal)}
                     </span>
                   </li>
                 );
@@ -558,6 +728,9 @@ function SummaryCard({
 
       <div className="mt-5 space-y-2 border-t border-neutral-200 pt-4 text-sm">
         <Line label="Plate" value={formatGBP(summary.plateSubtotal)} />
+        {summary.flagSubtotal > 0 && (
+          <Line label="Flag" value={formatGBP(summary.flagSubtotal)} />
+        )}
         {summary.accessorySubtotal > 0 && (
           <Line label="Add-ons" value={formatGBP(summary.accessorySubtotal)} />
         )}
@@ -571,8 +744,13 @@ function SummaryCard({
 
       {!compact && (
         <Link
-          href={cartHref}
-          className="mt-5 inline-flex w-full items-center justify-center rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
+          href={canAddToCart ? cartHref : "#"}
+          aria-disabled={!canAddToCart}
+          className={`mt-5 inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition ${
+            canAddToCart
+              ? "bg-[var(--brand-lime)] hover:bg-[var(--brand-lime-hover)]"
+              : "pointer-events-none bg-neutral-400"
+          }`}
         >
           Add configured plate to cart
         </Link>
@@ -631,10 +809,16 @@ function RegStep({
   value,
   onChange,
   cleanReg,
+  error,
+  mode,
+  size,
 }: {
   value: string;
   onChange: (v: string) => void;
   cleanReg: string;
+  error: string | null;
+  mode: PlateMode;
+  size: PlateSize;
 }) {
   return (
     <div>
@@ -642,7 +826,10 @@ function RegStep({
       <p className="mt-1 text-sm text-neutral-600">
         Type the exact reg you want on the plate. The preview updates live.
       </p>
-      <label htmlFor="reg" className="mt-6 block text-sm font-medium text-neutral-800">
+      <label
+        htmlFor="reg"
+        className="mt-6 block text-sm font-medium text-neutral-800"
+      >
         Registration
       </label>
       <input
@@ -652,16 +839,27 @@ function RegStep({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="AB12 CDE"
-        maxLength={9}
+        maxLength={12}
         spellCheck={false}
+        autoCapitalize="characters"
+        autoCorrect="off"
         autoComplete="off"
         inputMode="text"
-        className="mt-2 w-full rounded-lg border border-neutral-300 bg-white px-4 py-3 font-mono text-xl uppercase tracking-[0.2em] text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
+        className={`mt-2 w-full rounded-lg border bg-white px-4 py-3 font-mono text-xl uppercase tracking-[0.2em] text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-2 ${
+          error
+            ? "border-red-500 focus:border-red-600 focus:ring-red-500/20"
+            : "border-neutral-300 focus:border-neutral-900 focus:ring-neutral-900/10"
+        }`}
       />
-      <p className="mt-2 text-xs text-neutral-500">
-        Letters, numbers and a single space (e.g.{" "}
-        <span className="font-mono">FE34 THY</span>). Max 8 characters.
-      </p>
+      {error ? (
+        <p className="mt-2 text-xs font-medium text-red-700">{error}</p>
+      ) : (
+        <p className="mt-2 text-xs text-neutral-500">
+          {mode === "road-legal"
+            ? `Up to ${size.roadLegalMaxChars} characters on a ${size.label} plate.`
+            : "Up to 10 characters (excluding spaces) on a show plate."}
+        </p>
+      )}
       {cleanReg && cleanReg !== value.toUpperCase().trim() && (
         <p className="mt-2 text-xs text-neutral-500">
           We&apos;ll press{" "}
@@ -671,6 +869,66 @@ function RegStep({
           .
         </p>
       )}
+    </div>
+  );
+}
+
+function ModeStep({
+  value,
+  onSelect,
+}: {
+  value: PlateMode;
+  onSelect: (m: PlateMode) => void;
+}) {
+  return (
+    <div>
+      <h2 className="text-lg font-semibold text-neutral-900">Road Legal or Show?</h2>
+      <p className="mt-1 text-sm text-neutral-600">
+        Choose Road Legal for daily driving (we verify your documents). Choose
+        Show for display, off-road and private property — not road legal.
+      </p>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={() => onSelect("road-legal")}
+          className={`flex flex-col items-start rounded-xl border p-4 text-left transition ${
+            value === "road-legal"
+              ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
+              : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+          }`}
+        >
+          <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+            Road legal
+          </span>
+          <p className="mt-3 text-sm font-semibold text-neutral-900">
+            BS AU 145e road legal
+          </p>
+          <p className="mt-1 text-xs text-neutral-600">
+            Charles Wright font, correct spacing, supplier mark — accepted at
+            MOT. Document verification required.
+          </p>
+        </button>
+        <button
+          type="button"
+          onClick={() => onSelect("show")}
+          className={`flex flex-col items-start rounded-xl border p-4 text-left transition ${
+            value === "show"
+              ? "border-red-500 bg-red-50 ring-2 ring-red-400/30"
+              : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+          }`}
+        >
+          <span className="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700">
+            Not road legal
+          </span>
+          <p className="mt-3 text-sm font-semibold text-neutral-900">
+            Show / display plate
+          </p>
+          <p className="mt-1 text-xs text-neutral-600">
+            Custom spacing, optional country flag, no supplier markings. Off-road
+            and private property use only. No documents required.
+          </p>
+        </button>
+      </div>
     </div>
   );
 }
@@ -686,8 +944,7 @@ function StyleStep({
     <div>
       <h2 className="text-lg font-semibold text-neutral-900">Choose a style</h2>
       <p className="mt-1 text-sm text-neutral-600">
-        Four road legal finishes plus show plates. Pricing updates in your
-        summary.
+        Five finishes — all road-legal capable and all available as show plates.
       </p>
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         {PLATE_PRODUCTS.map((p) => {
@@ -697,7 +954,7 @@ function StyleStep({
               key={p.id}
               className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${
                 checked
-                  ? "border-neutral-900 bg-neutral-900/[0.04] ring-2 ring-neutral-900/10"
+                  ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
                   : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
               }`}
             >
@@ -707,20 +964,21 @@ function StyleStep({
                 value={p.id}
                 checked={checked}
                 onChange={() => onSelect(p.id as PlateStyle)}
-                className="mt-1 h-4 w-4 accent-neutral-900"
+                className="mt-1 h-4 w-4 accent-[var(--brand-lime)]"
               />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-neutral-900">
+                <p className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
                   {p.shortName}
-                </p>
-                <p className="text-xs text-neutral-600">{p.tagline}</p>
-                <p className="mt-1 text-xs text-neutral-500">
-                  From {formatGBP(p.singlePence)} ·{" "}
-                  {p.roadLegal ? (
-                    <span className="text-emerald-700">Road legal</span>
-                  ) : (
-                    <span className="text-red-700">Show only — not road legal</span>
+                  {p.badge && (
+                    <span className="inline-flex rounded-full bg-[#d4af37]/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#8a6c1a]">
+                      {p.badge}
+                    </span>
                   )}
+                </p>
+                <p className="mt-1 text-xs text-neutral-600">{p.tagline}</p>
+                <p className="mt-1 text-xs text-neutral-500">
+                  From {formatGBP(p.singlePence)} single ·{" "}
+                  {formatGBP(p.pairPence)} pair
                 </p>
               </div>
             </label>
@@ -733,37 +991,47 @@ function StyleStep({
 
 function PlateTypeStep({
   value,
+  size,
   onSelect,
 }: {
-  value: PlateType;
-  onSelect: (id: PlateType) => void;
+  value: PlatePosition;
+  size: PlateSize;
+  onSelect: (id: PlatePosition) => void;
 }) {
   return (
     <div>
       <h2 className="text-lg font-semibold text-neutral-900">Plate type</h2>
       <p className="mt-1 text-sm text-neutral-600">
-        Most customers order a pair. Pick just one if you only need to replace a
-        single plate.
+        Most customers order a pair. Pick just one to replace a single plate.
       </p>
       <div className="mt-6 grid gap-3">
         {PLATE_TYPE_OPTIONS.map((opt) => {
           const checked = value === opt.id;
+          const disabled = !positionAllowsSize(opt.id, size);
           return (
             <label
               key={opt.id}
               className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
-                checked
-                  ? "border-neutral-900 bg-neutral-900/[0.04] ring-2 ring-neutral-900/10"
-                  : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+                disabled
+                  ? "cursor-not-allowed border-neutral-200 bg-neutral-100/60 opacity-50"
+                  : checked
+                    ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
+                    : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
               }`}
+              title={
+                disabled
+                  ? "Not available for the selected size"
+                  : undefined
+              }
             >
               <input
                 type="radio"
                 name="plate-type"
                 value={opt.id}
                 checked={checked}
+                disabled={disabled}
                 onChange={() => onSelect(opt.id)}
-                className="h-4 w-4 accent-neutral-900"
+                className="h-4 w-4 accent-[var(--brand-lime)]"
               />
               <div className="flex-1">
                 <p className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
@@ -771,6 +1039,11 @@ function PlateTypeStep({
                   {opt.recommended && (
                     <span className="inline-flex rounded-full bg-[#d4af37]/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#8a6c1a]">
                       Recommended
+                    </span>
+                  )}
+                  {disabled && (
+                    <span className="inline-flex rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                      Not available
                     </span>
                   )}
                 </p>
@@ -784,66 +1057,140 @@ function PlateTypeStep({
   );
 }
 
-function SizeStep() {
+function SizeStep({
+  value,
+  plateType,
+  onSelect,
+}: {
+  value: string;
+  plateType: PlatePosition;
+  onSelect: (id: string) => void;
+}) {
   return (
     <div>
       <h2 className="text-lg font-semibold text-neutral-900">Plate size</h2>
       <p className="mt-1 text-sm text-neutral-600">
-        We ship the UK standard size by default — it fits almost every road
-        car.
+        Most cars take the Standard 520 × 111mm plate. Out-of-stock sizes are
+        disabled.
       </p>
-      <div className="mt-6 rounded-xl border border-neutral-900 bg-neutral-900/[0.04] p-4 ring-2 ring-neutral-900/10">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-neutral-900">
-              {STANDARD_SIZE.label}
-            </p>
-            <p className="text-xs text-neutral-500">{STANDARD_SIZE.dimensions}</p>
-          </div>
-          <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
-            Selected
-          </span>
-        </div>
-        <p className="mt-3 text-xs text-neutral-600">{STANDARD_SIZE.note}</p>
-      </div>
-
-      <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-        <p className="font-semibold">Need a different size?</p>
-        <p className="mt-1">{SIZE_CONTACT_NOTE}</p>
-        <Link
-          href="/contact"
-          className="mt-2 inline-block text-sm font-semibold text-amber-900 underline underline-offset-2"
-        >
-          Contact us →
-        </Link>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        {PLATE_SIZES.map((s) => {
+          const isOut = s.stock === "out_of_stock";
+          const isAllowed = positionAllowsSize(plateType, s);
+          const disabled = isOut || !isAllowed;
+          const checked = value === s.id;
+          return (
+            <button
+              key={s.id}
+              type="button"
+              disabled={disabled}
+              onClick={() => onSelect(s.id)}
+              className={`flex flex-col items-start rounded-xl border p-4 text-left transition ${
+                disabled
+                  ? "cursor-not-allowed border-neutral-200 bg-neutral-100/60 opacity-50"
+                  : checked
+                    ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
+                    : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+              }`}
+              title={
+                isOut
+                  ? "Currently out of stock"
+                  : !isAllowed
+                    ? "Not compatible with selected plate type"
+                    : undefined
+              }
+            >
+              <div className="flex w-full items-start justify-between gap-2">
+                <p className="text-sm font-semibold text-neutral-900">
+                  {s.label}
+                </p>
+                {isOut && (
+                  <span className="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700">
+                    Out of stock
+                  </span>
+                )}
+                {!isOut && !isAllowed && (
+                  <span className="inline-flex rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                    Not for {plateType.replace("-", " ")}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-neutral-500">{s.dimensions}</p>
+              {s.note && (
+                <p className="mt-1 text-[11px] text-neutral-500">{s.note}</p>
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 function FlagStep({
-  value,
-  onSelect,
+  mode,
+  roadLegalValue,
+  onRoadLegalSelect,
+  showValue,
+  onShowSelect,
 }: {
-  value: PlateFlag;
-  onSelect: (id: PlateFlag) => void;
+  mode: PlateMode;
+  roadLegalValue: PlateFlag;
+  onRoadLegalSelect: (id: PlateFlag) => void;
+  showValue: string;
+  onShowSelect: (code: string) => void;
 }) {
+  if (mode === "show") {
+    return (
+      <div>
+        <h2 className="text-lg font-semibold text-neutral-900">
+          Country flag (show plates only)
+        </h2>
+        <p className="mt-1 text-sm text-neutral-600">
+          Show plates can carry any international identifier on the left strip.
+          Adds {formatGBP(SHOW_FLAG_FEE_PENCE)} per plate when selected.
+        </p>
+        <div className="mt-6 grid gap-3">
+          <label className="text-sm font-medium text-neutral-800">
+            Country
+            <select
+              value={showValue}
+              onChange={(e) => onShowSelect(e.target.value)}
+              className="mt-2 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
+            >
+              <option value="">No country flag</option>
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.name} ({c.code})
+                </option>
+              ))}
+            </select>
+          </label>
+          {showValue && (
+            <p className="text-xs text-neutral-500">
+              Flag fee will apply per plate at checkout.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       <h2 className="text-lg font-semibold text-neutral-900">Left-side flag</h2>
       <p className="mt-1 text-sm text-neutral-600">
-        Optional identifier strip on the left of the plate. Default is no flag
-        — pick one if you want it.
+        Optional identifier strip on the left of road-legal plates. Default is
+        no flag.
       </p>
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        {FLAG_OPTIONS.map((opt) => {
-          const checked = value === opt.id;
+        {ROAD_LEGAL_FLAG_OPTIONS.map((opt) => {
+          const checked = roadLegalValue === opt.id;
           return (
             <label
               key={opt.id}
               className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${
                 checked
-                  ? "border-neutral-900 bg-neutral-900/[0.04] ring-2 ring-neutral-900/10"
+                  ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
                   : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
               }`}
             >
@@ -852,8 +1199,8 @@ function FlagStep({
                 name="flag"
                 value={opt.id}
                 checked={checked}
-                onChange={() => onSelect(opt.id)}
-                className="mt-1 h-4 w-4 accent-neutral-900"
+                onChange={() => onRoadLegalSelect(opt.id)}
+                className="mt-1 h-4 w-4 accent-[var(--brand-lime)]"
               />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-neutral-900">
@@ -870,10 +1217,12 @@ function FlagStep({
 }
 
 function ExtrasStep({
+  plateType,
   state,
   onToggle,
   onQty,
 }: {
+  plateType: PlatePosition;
   state: Record<AccessoryId, { selected: boolean; quantity: number }>;
   onToggle: (id: AccessoryId) => void;
   onQty: (id: AccessoryId, qty: number) => void;
@@ -882,18 +1231,26 @@ function ExtrasStep({
     <div>
       <h2 className="text-lg font-semibold text-neutral-900">Add-ons</h2>
       <p className="mt-1 text-sm text-neutral-600">
-        Optional accessories for fitting your plates. All add-ons ship with the
-        order — no separate delivery.
+        Optional fittings for your plates. All ship with the order.
       </p>
-      <div className="mt-6 grid gap-3">
+      <div className="mt-4 rounded-xl border border-[var(--brand-lime)]/30 bg-[var(--brand-lime)]/[0.04] p-3 text-xs text-[var(--brand-lime)]">
+        <strong className="font-semibold">DVLA recommends</strong> adhesive
+        strips over fixing kits for a cleaner finish.
+      </div>
+      <div className="mt-4 grid gap-3">
         {ACCESSORY_LIST.map((a) => {
           const s = state[a.id];
+          const positional = a.positionPriced;
+          const displayPrice = positional
+            ? `${formatGBP(a.pricePence)}/plate (${formatGBP(fixingKitPenceFor(plateType))} for your selection)`
+            : `${formatGBP(a.pricePence)}/pack of 4`;
+          const minQty = a.id === "adhesive-strips" ? 1 : 1;
           return (
             <div
               key={a.id}
               className={`flex flex-col gap-3 rounded-xl border p-4 transition sm:flex-row sm:items-center sm:justify-between ${
                 s.selected
-                  ? "border-neutral-900 bg-neutral-900/[0.04]"
+                  ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05]"
                   : "border-neutral-200 bg-neutral-50"
               }`}
             >
@@ -902,25 +1259,29 @@ function ExtrasStep({
                   type="checkbox"
                   checked={s.selected}
                   onChange={() => onToggle(a.id)}
-                  className="mt-1 h-4 w-4 accent-neutral-900"
+                  className="mt-1 h-4 w-4 accent-[var(--brand-lime)]"
                 />
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-neutral-900">
-                    {a.shortName} — {formatGBP(a.pricePence)}
+                    {a.shortName} — {displayPrice}
                   </p>
                   <p className="text-xs text-neutral-600">{a.description}</p>
                   <p className="mt-1 text-[11px] text-neutral-500">
                     {a.helpText}
                   </p>
+                  <p className="mt-1 text-[11px] italic text-neutral-500">
+                    {a.tooltip}
+                  </p>
                 </div>
               </label>
-              {s.selected && (
+              {s.selected && !positional && (
                 <div className="flex items-center gap-2 self-end sm:self-center">
                   <button
                     type="button"
                     aria-label={`Decrease ${a.shortName} quantity`}
                     onClick={() => onQty(a.id, s.quantity - 1)}
-                    className="grid h-8 w-8 place-items-center rounded-md border border-neutral-300 text-neutral-700 transition hover:border-neutral-900"
+                    disabled={s.quantity <= minQty}
+                    className="grid h-8 w-8 place-items-center rounded-md border border-neutral-300 text-neutral-700 transition hover:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     −
                   </button>
@@ -949,48 +1310,63 @@ function ReviewStep({
   displayReg,
   isPlaceholder,
   product,
+  mode,
   plateType,
+  size,
   flag,
+  countryCode,
   selectedAccessories,
   summary,
+  regError,
 }: {
   displayReg: string;
   isPlaceholder: boolean;
   product: PlateProduct;
-  plateType: PlateType;
+  mode: PlateMode;
+  plateType: PlatePosition;
+  size: PlateSize;
   flag: PlateFlag;
+  countryCode: string;
   selectedAccessories: SelectedAccessory[];
   summary: ReturnType<typeof calculateCartTotal>;
+  regError: string | null;
 }) {
   return (
     <div>
       <h2 className="text-lg font-semibold text-neutral-900">Review your plate</h2>
       <p className="mt-1 text-sm text-neutral-600">
-        Double-check the details below, then add the configured plate to your
-        cart.
+        Check everything below, then add the configured plate to cart.
       </p>
+
+      {regError && (
+        <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          {regError}
+        </p>
+      )}
 
       <dl className="mt-6 divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-neutral-50">
         <ReviewRow label="Registration">
           <span className="font-mono">{displayReg}</span>
           {isPlaceholder && (
-            <span className="ml-1 text-xs text-neutral-500">(example — type yours in step 1)</span>
-          )}
-        </ReviewRow>
-        <ReviewRow label="Style">
-          {product.name}
-          {!product.roadLegal && (
-            <span className="ml-2 inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700">
-              Show only
+            <span className="ml-1 text-xs text-neutral-500">
+              (example — type yours in step 1)
             </span>
           )}
         </ReviewRow>
+        <ReviewRow label="Mode">
+          {mode === "show" ? "Show plate (not road legal)" : "Road legal"}
+        </ReviewRow>
+        <ReviewRow label="Style">{product.name}</ReviewRow>
         <ReviewRow label="Plate type">{plateTypeLabel(plateType)}</ReviewRow>
         <ReviewRow label="Size">
-          {STANDARD_SIZE.label} · {STANDARD_SIZE.dimensions}
+          {size.label} · {size.dimensions}
         </ReviewRow>
         <ReviewRow label="Flag">
-          {flag === "none" ? "No flag" : flag}
+          {mode === "show"
+            ? findCountry(countryCode)?.name ?? "No country flag"
+            : flag === "none"
+              ? "No flag"
+              : flag}
         </ReviewRow>
         <ReviewRow label="Add-ons">
           {selectedAccessories.length === 0
@@ -998,7 +1374,9 @@ function ReviewStep({
             : selectedAccessories
                 .map((a) => {
                   const accessory = ACCESSORY_LIST.find((x) => x.id === a.id);
-                  return accessory ? `${accessory.shortName} × ${a.quantity}` : null;
+                  return accessory
+                    ? `${accessory.shortName}${accessory.positionPriced ? "" : ` × ${a.quantity}`}`
+                    : null;
                 })
                 .filter(Boolean)
                 .join(", ")}
@@ -1011,7 +1389,7 @@ function ReviewStep({
         </ReviewRow>
       </dl>
 
-      {product.roadLegal && (
+      {mode === "road-legal" && (
         <p className="mt-4 text-xs text-neutral-500">
           You&apos;ll upload your ID and entitlement documents during checkout.
         </p>

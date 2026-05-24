@@ -66,15 +66,9 @@ export default function PricingPage() {
                       {formatGBP(p.pairPence)}
                     </td>
                     <td className="px-4 py-4 sm:px-6">
-                      {p.roadLegal ? (
-                        <span className="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-                          Road legal
-                        </span>
-                      ) : (
-                        <span className="inline-flex rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
-                          Show only
-                        </span>
-                      )}
+                      <span className="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                        Road legal · Show mode
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -111,10 +105,26 @@ export default function PricingPage() {
               <p className="mt-1 text-sm text-neutral-600">{a.description}</p>
               <p className="mt-3 text-lg font-semibold">
                 {formatGBP(a.pricePence)}
+                {a.positionPriced ? (
+                  <span className="ml-1 text-sm font-normal text-neutral-500">
+                    per plate
+                  </span>
+                ) : (
+                  <span className="ml-1 text-sm font-normal text-neutral-500">
+                    per pack of 4
+                  </span>
+                )}
+              </p>
+              <p className="mt-2 text-xs italic text-neutral-500">
+                {a.tooltip}
               </p>
             </div>
           ))}
         </div>
+        <p className="mt-4 rounded-xl border border-[var(--brand-lime)]/30 bg-[var(--brand-lime)]/[0.04] px-4 py-3 text-sm text-[var(--brand-lime)]">
+          <strong className="font-semibold">DVLA recommends</strong> adhesive
+          strips over fixing kits for a cleaner finish.
+        </p>
 
         <div className="mt-12 rounded-2xl border border-neutral-200 bg-neutral-900 p-8 text-white">
           <h2 className="text-xl font-semibold">Delivery</h2>

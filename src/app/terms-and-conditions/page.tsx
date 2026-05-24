@@ -318,7 +318,7 @@ export default function TermsPage() {
 
         <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-neutral-200 pt-8">
           <Link
-            href="/returns-refunds"
+            href="/returns-and-refunds"
             className="text-sm font-semibold text-neutral-900 underline-offset-4 hover:underline"
           >
             Returns &amp; refunds →

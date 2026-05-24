@@ -5,34 +5,34 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Compliance — BS AU 145e, DVLA & Document Verification",
   description:
-    "How A* Number Plates complies with UK number plate law: BS AU 145e materials, Charles Wright font, document verification, accepted ID and entitlement documents.",
+    "How A★ Number Plates complies with UK number plate law: BS AU 145e materials, Charles Wright font, DVLA Registered Supplier, accepted ID and entitlement documents.",
   path: "/compliance",
 });
 
 const faqs = [
   {
     q: "Why do you ask for documents before pressing road legal plates?",
-    a: "Because UK law requires us to. Registered number plate suppliers must verify the buyer's identity and entitlement to the registration before manufacturing a road legal plate. This is what stops casual plate cloning.",
+    a: "Because UK law requires it. As a DVLA Registered Number Plate Supplier we must verify the buyer's identity and entitlement to the registration before manufacturing a road legal plate. This is what stops casual plate cloning.",
   },
   {
     q: "What is BS AU 145e?",
-    a: "It's the British Standard, introduced in 2021, that every new UK road legal number plate must meet. It defines materials, abrasion resistance, retroreflectivity, character font, spacing and durability.",
+    a: "The British Standard introduced on 1 September 2021 that every new UK road legal number plate must meet. It defines materials, abrasion resistance, retroreflectivity, character font, spacing and durability.",
   },
   {
-    q: "Are 3D, 4D and gel plates road legal?",
-    a: "Yes — provided the characters follow the mandatory Charles Wright font shape, the dimensions are correct and the plate meets BS AU 145e. Our 3D Gel, 4D and 4D Gel plates are all built to this standard.",
+    q: "Are 3D, 4D, 4D Gel and 4D Retro plates road legal?",
+    a: "Yes — provided the characters follow the mandatory Charles Wright font shape, the dimensions are correct and the plate meets BS AU 145e. Our 3D Gel, 4D, 4D Gel and 4D Retro plates are all built to this standard.",
   },
   {
-    q: "What makes a plate not road legal?",
-    a: "Stylised, italic or non-standard fonts; tinted, smoked or coloured backgrounds; misaligned characters; non-compliant spacing; and any layout that doesn't match the Charles Wright spec. These are show-only plates.",
+    q: "What's the difference between road legal and show plates?",
+    a: "Road legal plates use Charles Wright at 79×50mm, BS AU 145e materials and supplier markings — they pass MOT. Show plates can use any spacing or layout, have no supplier markings, and are off-road / display only.",
   },
   {
     q: "What happens if I display a non-compliant plate?",
-    a: "You risk a fine of up to £1,000, an automatic MOT failure, and your insurance may be invalidated if the registration is unreadable.",
+    a: "You risk a fine of up to £1,000, an automatic MOT failure, ANPR flagging, and your insurance may be invalidated if the registration is unreadable. The plate can also be confiscated.",
   },
   {
     q: "How long do you keep my documents?",
-    a: "We retain ID and entitlement records for a minimum of three years, as required of registered number plate suppliers. They're stored encrypted, never shared with third parties, and processed in line with UK GDPR.",
+    a: "We retain ID and entitlement records for a minimum of three years, as required of registered number plate suppliers. They are stored encrypted, never shared with third parties, and processed in line with UK GDPR.",
   },
   {
     q: "Do show plates need documents?",
@@ -43,7 +43,7 @@ const faqs = [
 export default function CompliancePage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-black text-white">
+      <section className="relative overflow-hidden bg-[var(--brand-lime)] text-white">
         <div
           aria-hidden
           className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(212,175,55,0.18),transparent_60%)]"
@@ -53,12 +53,12 @@ export default function CompliancePage() {
             Compliance
           </p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
-            Built to the British Standard. Verified before we press.
+            DVLA registered. BS AU 145e. Verified before we press.
           </h1>
-          <p className="mt-4 max-w-2xl text-white/70">
-            Every road legal plate we press meets BS AU 145e — the 2021 British
-            Standard for vehicle registration plates — and is only pressed
-            after we verify your right to display the registration.
+          <p className="mt-4 max-w-2xl text-white/80">
+            Every road legal plate we make meets BS AU 145e — the British
+            Standard introduced on 1 September 2021 — and is only pressed after
+            we verify your right to display the registration.
           </p>
         </div>
       </section>
@@ -68,8 +68,9 @@ export default function CompliancePage() {
           <div className="grid gap-6 md:grid-cols-2">
             <Card title="Road legal plates">
               Manufactured to BS AU 145e using the mandatory Charles Wright
-              font on reflective acrylic. Accepted at MOT and meet the latest
-              DVLA rules. We verify your documents before pressing.
+              font on reflective British acrylic. Includes the supplier name +
+              postcode + BS AU 145e mark. Accepted at MOT. Document
+              verification required.
             </Card>
             <Card title="Show plates" tone="warning">
               For display, exhibitions, photography and private property only.
@@ -83,24 +84,28 @@ export default function CompliancePage() {
           </h2>
           <ul className="mt-4 space-y-3 text-neutral-700">
             <li>
-              <strong>Materials &amp; durability</strong> — abrasion, impact and
-              weather resistance over the life of the plate.
+              <strong>Charles Wright font</strong> at 79mm × 50mm (25mm for the
+              characters I and 1) — no other font is permitted on a road legal
+              plate.
             </li>
             <li>
-              <strong>Retroreflectivity</strong> — the front must be reflective
-              white, the rear reflective yellow.
+              <strong>Spacing</strong> — 11mm between characters, 33mm group
+              gap, 11mm top and bottom margins.
             </li>
             <li>
-              <strong>Font &amp; characters</strong> — Charles Wright only.
-              Character dimensions and spacing are tightly specified.
+              <strong>Retroreflective sheeting</strong> — white front, yellow
+              rear. No tints, smoking or coloured backgrounds.
             </li>
             <li>
-              <strong>Layout</strong> — group spacing, margins and optional
-              flag / country identifiers on the left.
+              <strong>Solid black characters</strong> on the reflective
+              background. No grey shading or two-tone characters.
             </li>
             <li>
-              <strong>Supplier mark</strong> — every road legal plate carries
-              the supplier postcode and BS AU 145e reference.
+              <strong>Supplier mark + name + postcode</strong> on every plate.
+            </li>
+            <li>
+              <strong>UV, abrasion and weather durability</strong> across the
+              life of the vehicle.
             </li>
           </ul>
 
@@ -108,21 +113,21 @@ export default function CompliancePage() {
             Document verification
           </h2>
           <p className="mt-3 text-neutral-700">
-            We are required to verify two things before we press a road legal
-            plate: <strong>who you are</strong> (proof of identity) and{" "}
-            <strong>whether you&apos;re entitled to the registration</strong>{" "}
-            (proof of entitlement). One document from each list, both clear,
-            valid and unaltered.
+            We need <strong>one Proof of Identity</strong> and{" "}
+            <strong>one Proof of Entitlement</strong>. Both must be clear, in
+            date and unaltered.
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <DocList
               heading="1. Accepted ID"
               items={[
-                "UK driving licence (full or provisional)",
-                "Valid passport",
-                "Armed forces ID card",
-                "Police warrant card",
+                "Driving licence",
+                "Passport",
+                "National ID card",
+                "Utility bill (≤6 months old)",
+                "Bank or building society statement (≤6 months)",
+                "Council tax bill (≤12 months)",
               ]}
             />
             <DocList
@@ -130,10 +135,11 @@ export default function CompliancePage() {
               items={[
                 "V5C — vehicle log book",
                 "V5C/2 — new keeper supplement",
-                "V778 — retention document",
                 "V750 — certificate of entitlement",
-                "Hire or lease agreement in your name",
-                "Trade insurance certificate in your name",
+                "V778 — retention document",
+                "V11 — reminder",
+                "V379 — duplicate certificate",
+                "Lease or finance authorisation letter",
               ]}
             />
           </div>
@@ -141,23 +147,23 @@ export default function CompliancePage() {
           <p className="mt-6 text-sm text-neutral-600">
             Digitally edited or unclear documents will be rejected. If we
             can&apos;t verify within a reasonable timeframe we&apos;ll refund
-            the order, minus any non-refundable payment processing fees.
+            the order, minus any non-refundable Stripe payment processing fees.
           </p>
 
           <div className="mt-12 rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-900">
             <p className="font-semibold">Penalties for non-compliant plates</p>
             <p className="mt-2">
               Displaying a non-compliant number plate is a fine of up to £1,000,
-              an automatic MOT failure and can invalidate your insurance. We
-              will never press a road legal plate that doesn&apos;t meet BS AU
-              145e.
+              an automatic MOT failure, ANPR flagging and possible plate
+              confiscation. We will never press a road legal plate that
+              doesn&apos;t meet BS AU 145e.
             </p>
           </div>
 
           <div className="mt-12 flex flex-wrap items-center gap-4">
             <Link
               href="/builder"
-              className="inline-flex items-center justify-center rounded-md bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700"
+              className="inline-flex items-center justify-center rounded-lg bg-[var(--brand-lime)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-lime-hover)]"
             >
               Start a road legal order
             </Link>

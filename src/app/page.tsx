@@ -2,7 +2,7 @@ import Link from "next/link";
 import PlatePreview from "@/components/PlatePreview";
 import ProductCard from "@/components/ProductCard";
 import FAQSection from "@/components/FAQSection";
-import { PLATE_PRODUCTS, ROAD_LEGAL_PRODUCTS } from "@/lib/products";
+import { PLATE_PRODUCTS } from "@/lib/products";
 import { buildMetadata } from "@/lib/seo";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/schema";
 
@@ -220,9 +220,9 @@ function ProductGrid() {
           ))}
         </div>
         <p className="mt-10 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-          <strong className="font-semibold">Show plates are display-only.</strong>{" "}
-          They are not road legal and must not be fitted to a vehicle driven on
-          a public road.
+          <strong className="font-semibold">Need a show plate?</strong>{" "}
+          Show is a <Link href="/show-plates" className="underline underline-offset-2">mode</Link> applied
+          to any of these finishes — display-only and not road legal.
         </p>
       </div>
     </section>
@@ -253,7 +253,7 @@ function BuilderCallout() {
         </div>
         <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-neutral-900 to-black p-8">
           <div className="flex flex-col gap-4">
-            {ROAD_LEGAL_PRODUCTS.map((p) => (
+            {PLATE_PRODUCTS.map((p) => (
               <div
                 key={p.id}
                 className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.03] px-4 py-3"

@@ -9,27 +9,27 @@ import {
   serializeJsonLd,
 } from "@/lib/schema";
 
-const SLUG = "4d-gel-number-plates";
+const SLUG = "4d-retro-number-plates";
 
 export const metadata = buildMetadata({
-  title: "4D Gel Number Plates — Premium Finish, From £27.99",
+  title: "4D Retro Number Plates — Distinctive Finish, From £31.99",
   description:
-    "Our flagship 4D gel number plates combine laser-cut acrylic letters with a hand-poured gel dome. Road legal, BS AU 145e. Single £27.99, pair £37.99.",
+    "Premium retro-style raised characters with a distinctive chamfer profile. Road legal, BS AU 145e. Single £31.99, pair £47.49.",
   path: `/${SLUG}`,
 });
 
 const faqs = [
   {
-    q: "What makes 4D gel different?",
-    a: "We start with a laser-cut 4D acrylic base for crisp, raised characters, then hand-pour a UV-stable polyurethane resin dome on top for an unmatched depth and shine.",
+    q: "Are 4D Retro plates road legal?",
+    a: "Yes. Provided the characters follow the mandatory Charles Wright shape, the dimensions are correct and the plate meets BS AU 145e, raised 4D Retro plates are fully road legal in the UK.",
   },
   {
-    q: "Are they road legal?",
-    a: "Yes. Provided every character follows the mandatory Charles Wright shape and the plate meets BS AU 145e — and ours do — 4D gel plates are road legal in the UK.",
+    q: "What makes 4D Retro different from 4D?",
+    a: "4D Retro uses a chamfered character profile for a distinctive, vintage look. The base material and standards are identical to our standard 4D — it's a finish difference, not a compliance difference.",
   },
   {
     q: "Do you offer a warranty?",
-    a: "Yes — every road legal plate carries our 12-month workmanship warranty against fading, peeling and character separation in normal road use.",
+    a: "Yes — every road legal plate carries our 3-year manufacturing-defect warranty against fading, peeling and character separation in normal road use.",
   },
 ];
 
@@ -39,7 +39,7 @@ export default function Page() {
   return (
     <>
       <ProductPageBody product={product} />
-      <FAQSection items={faqs} title="4D Gel plate FAQ" />
+      <FAQSection items={faqs} title="4D Retro plate FAQ" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

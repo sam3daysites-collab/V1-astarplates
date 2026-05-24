@@ -1,3 +1,5 @@
+// Plate finishes. Show is a MODE applied to any of these, not a separate product.
+
 import type { PlateProductId } from "./pricing";
 import { PLATE_PRICES } from "./pricing";
 
@@ -9,8 +11,6 @@ export interface PlateProduct {
   tagline: string;
   description: string;
   features: string[];
-  roadLegal: boolean;
-  category: "road-legal" | "show";
   badge?: string;
   singlePence: number;
   pairPence: number;
@@ -19,21 +19,19 @@ export interface PlateProduct {
 export const PLATE_PRODUCTS: PlateProduct[] = [
   {
     id: "standard-2d",
-    slug: "standard-number-plates",
+    slug: "standard-2d-number-plates",
     name: "Standard 2D Number Plates",
     shortName: "Standard 2D",
-    tagline: "MOT-ready, BS AU 145e certified, made the same day.",
+    tagline: "Clean, classic flat-printed characters.",
     description:
-      "Our standard 2D plates are pressed and printed in the UK on premium reflective acrylic. Fully road legal, MOT compliant and built to BS AU 145e — the everyday plate done properly.",
+      "The timeless, affordable choice for any vehicle. Pressed to BS AU 145e on reflective British acrylic with the mandatory Charles Wright font. Pressed in-house, dispatched same-day via DPD.",
     features: [
       "BS AU 145e compliant",
-      "MOT and DVLA approved",
+      "MOT and DVLA accepted",
+      "Charles Wright font",
       "Reflective British acrylic",
-      "Sharp digital print",
-      "Made same working day",
+      "Free next-day DPD delivery",
     ],
-    roadLegal: true,
-    category: "road-legal",
     singlePence: PLATE_PRICES["standard-2d"].single,
     pairPence: PLATE_PRICES["standard-2d"].pair,
   },
@@ -42,18 +40,16 @@ export const PLATE_PRODUCTS: PlateProduct[] = [
     slug: "3d-gel-number-plates",
     name: "3D Gel Number Plates",
     shortName: "3D Gel",
-    tagline: "Raised resin domed digits with a deep gloss finish.",
+    tagline: "Raised gel resin characters with a glossy, domed finish.",
     description:
-      "Hand-finished polyurethane resin domes give every character a deep, glossy 3D look while keeping the plate fully road legal under the latest DVLA rules.",
+      "Premium look at a great price. Hand-finished UV-stable polyurethane domes give every character a deep, glossy 3D look while staying fully road legal under the BS AU 145e standard.",
     features: [
-      "Raised resin gel characters",
-      "Glossy domed finish",
+      "Domed gel resin characters",
+      "Glossy hand-finished surface",
       "BS AU 145e compliant",
       "Road legal in the UK",
-      "Hand finished in the UK",
+      "Free next-day DPD delivery",
     ],
-    roadLegal: true,
-    category: "road-legal",
     badge: "Most Popular",
     singlePence: PLATE_PRICES["3d-gel"].single,
     pairPence: PLATE_PRICES["3d-gel"].pair,
@@ -63,18 +59,16 @@ export const PLATE_PRODUCTS: PlateProduct[] = [
     slug: "4d-number-plates",
     name: "4D Number Plates",
     shortName: "4D",
-    tagline: "Laser-cut acrylic letters with a sharp, flat-top edge.",
+    tagline: "Sharp-edged laser-cut acrylic letters. Bold and modern.",
     description:
-      "Precision laser-cut 3mm acrylic letters bonded to a reflective base. A bold, modern look that stays fully road legal under the 2021 DVLA standard.",
+      "Each character is laser-cut from 3mm black acrylic and bonded to a reflective base for a sharp, raised, factory-precise look. Fully road legal under BS AU 145e.",
     features: [
       "Laser-cut 3mm acrylic characters",
       "Sharp flat-top finish",
       "BS AU 145e compliant",
       "Road legal in the UK",
-      "Premium reflective backing",
+      "Free next-day DPD delivery",
     ],
-    roadLegal: true,
-    category: "road-legal",
     singlePence: PLATE_PRICES["4d"].single,
     pairPence: PLATE_PRICES["4d"].pair,
   },
@@ -83,41 +77,38 @@ export const PLATE_PRODUCTS: PlateProduct[] = [
     slug: "4d-gel-number-plates",
     name: "4D Gel Number Plates",
     shortName: "4D Gel",
-    tagline: "Laser-cut acrylic with a glossy domed gel top.",
+    tagline: "Raised acrylic with a glossy gel overlay. Depth and shine.",
     description:
-      "The flagship finish — 4D laser-cut acrylic characters topped with a hand-poured gel dome for unmatched depth and shine. Road legal and built to BS AU 145e.",
+      "Our most-loved finish. Laser-cut 4D acrylic characters topped with a hand-poured gel dome for unmatched depth and gloss. Road legal and built to BS AU 145e.",
     features: [
       "4D acrylic base + gel dome",
       "Maximum depth and shine",
       "BS AU 145e compliant",
       "Road legal in the UK",
-      "Premium hand finish",
+      "Free next-day DPD delivery",
     ],
-    roadLegal: true,
-    category: "road-legal",
     badge: "Premium",
     singlePence: PLATE_PRICES["4d-gel"].single,
     pairPence: PLATE_PRICES["4d-gel"].pair,
   },
   {
-    id: "show",
-    slug: "show-plates",
-    name: "Show Plates",
-    shortName: "Show Plates",
-    tagline: "Custom show plates for off-road display only.",
+    id: "4d-retro",
+    slug: "4d-retro-number-plates",
+    name: "4D Retro Number Plates",
+    shortName: "4D Retro",
+    tagline: "Premium retro-style raised characters. Show-stopping finish.",
     description:
-      "Custom fonts, colours and layouts for shows, car meets and private property. Show plates are not road legal and must not be used on a vehicle driven on a public road.",
+      "Distinctive raised characters with a retro chamfer finish — a tribute to classic British plates that still passes BS AU 145e on a modern car.",
     features: [
-      "Custom fonts and colours",
-      "Slim, square or oversized sizes",
-      "Show, display and photography use",
-      "Off-road / private land only",
-      "Not road legal — not for public roads",
+      "Retro chamfer profile",
+      "Raised acrylic characters",
+      "BS AU 145e compliant",
+      "Road legal in the UK",
+      "Free next-day DPD delivery",
     ],
-    roadLegal: false,
-    category: "show",
-    singlePence: PLATE_PRICES.show.single,
-    pairPence: PLATE_PRICES.show.pair,
+    badge: "New",
+    singlePence: PLATE_PRICES["4d-retro"].single,
+    pairPence: PLATE_PRICES["4d-retro"].pair,
   },
 ];
 
@@ -129,10 +120,5 @@ export function getProductById(id: PlateProductId): PlateProduct | undefined {
   return PLATE_PRODUCTS.find((p) => p.id === id);
 }
 
-export const ROAD_LEGAL_PRODUCTS = PLATE_PRODUCTS.filter(
-  (p) => p.category === "road-legal",
-);
-
-export const SHOW_PRODUCTS = PLATE_PRODUCTS.filter(
-  (p) => p.category === "show",
-);
+// Every finish is road-legal capable. "Show mode" is configured at order time.
+export const ROAD_LEGAL_PRODUCTS = PLATE_PRODUCTS;

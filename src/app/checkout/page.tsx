@@ -13,7 +13,9 @@ export const metadata = buildMetadata({
 
 export default function CheckoutPage() {
   // Server-authoritative totals only — never trust client values.
-  const summary = calculateCartTotal([{ productId: "3d-gel", qty: "pair" }]);
+  const summary = calculateCartTotal([
+    { productId: "3d-gel", qty: "pair", mode: "road-legal" },
+  ]);
 
   return (
     <section className="bg-neutral-50">
