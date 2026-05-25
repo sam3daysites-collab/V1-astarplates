@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
-export const SITE_NAME = "A* Number Plates";
+export const SITE_NAME = "A★ Number Plates";
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://astarnumberplates.uk";
 export const SITE_DESCRIPTION =
-  "Premium UK number plates — road legal 2D, 3D Gel, 4D and 4D Gel plates pressed to BS AU 145e. Same-day dispatch, document-verified.";
+  "Premium UK number plates — road legal 2D, 3D Gel, 4D, 4D Gel and 4D Retro plates pressed to BS AU 145e. Free DPD next-day delivery on orders before 11am Mon–Sat.";
 export const SITE_KEYWORDS = [
   "number plates",
   "uk number plates",
@@ -12,6 +12,7 @@ export const SITE_KEYWORDS = [
   "3d gel plates",
   "4d plates",
   "4d gel plates",
+  "4d retro plates",
   "show plates",
   "replacement number plates",
   "dvla compliant plates",

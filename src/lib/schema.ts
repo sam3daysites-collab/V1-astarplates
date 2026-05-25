@@ -1,4 +1,5 @@
 import { PLATE_PRODUCTS } from "./products";
+import { COMPANY } from "./policies";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "./seo";
 
 type JsonLd = Record<string, unknown>;
@@ -7,16 +8,52 @@ export function organisationSchema(): JsonLd {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: SITE_NAME,
+    name: COMPANY.legalName,
+    alternateName: COMPANY.tradingName,
     url: SITE_URL,
     description: SITE_DESCRIPTION,
     logo: `${SITE_URL}/logo.png`,
+    email: COMPANY.email,
+    telephone: COMPANY.phones[0],
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: COMPANY.addressLine1,
+      addressLocality: COMPANY.city,
+      addressRegion: COMPANY.region,
+      postalCode: COMPANY.postcode,
+      addressCountry: "GB",
+    },
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",
+      email: COMPANY.email,
+      telephone: COMPANY.phones[0],
       areaServed: "GB",
       availableLanguage: ["en"],
     },
+  };
+}
+
+export function localBusinessSchema(): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${SITE_URL}#business`,
+    name: SITE_NAME,
+    legalName: COMPANY.legalName,
+    url: SITE_URL,
+    telephone: COMPANY.phones[0],
+    email: COMPANY.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: COMPANY.addressLine1,
+      addressLocality: COMPANY.city,
+      addressRegion: COMPANY.region,
+      postalCode: COMPANY.postcode,
+      addressCountry: "GB",
+    },
+    areaServed: "GB",
+    priceRange: "££",
   };
 }
 
@@ -58,7 +95,7 @@ export function productSchema(slug: string): JsonLd | null {
     name: product.name,
     description: product.description,
     brand: { "@type": "Brand", name: SITE_NAME },
-    category: product.roadLegal ? "Road Legal Number Plates" : "Show Plates",
+    category: "Road Legal Number Plates",
     offers: [
       {
         "@type": "Offer",

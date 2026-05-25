@@ -9,23 +9,23 @@ import {
   serializeJsonLd,
 } from "@/lib/schema";
 
-const SLUG = "standard-number-plates";
+const SLUG = "standard-2d-number-plates";
 
 export const metadata = buildMetadata({
   title: "Standard 2D Number Plates — BS AU 145e, From £16.99",
   description:
-    "Road legal standard 2D number plates pressed to BS AU 145e. MOT and DVLA approved. Single £16.99, pair £26.99. Same-day dispatch.",
+    "Road legal standard 2D number plates pressed to BS AU 145e. MOT and DVLA approved. Single £16.99, pair £26.99. Free DPD next-day delivery.",
   path: `/${SLUG}`,
 });
 
 const faqs = [
   {
     q: "Are these plates MOT compliant?",
-    a: "Yes. Our Standard 2D plates are manufactured to BS AU 145e using the mandatory Charles Wright font and are accepted at MOT.",
+    a: "Yes. Our Standard 2D plates are manufactured to BS AU 145e using the mandatory Charles Wright font, the correct character dimensions and the supplier mark. Accepted at every MOT centre.",
   },
   {
     q: "What size will I receive?",
-    a: "By default we press the UK standard 520mm × 111mm oblong plate. Square 4x4 and motorbike sizes are available in the builder.",
+    a: "By default we press the UK standard 520mm × 111mm oblong plate. Smaller, square, motorbike and import sizes are available in the builder.",
   },
   {
     q: "Do I need to send documents?",
@@ -47,7 +47,7 @@ export default function Page() {
             productSchema(SLUG) ?? {},
             breadcrumbSchema([
               { name: "Home", path: "/" },
-              { name: "Road Legal", path: "/road-legal-number-plates" },
+              { name: "Choose Style", path: "/choose-style" },
               { name: product.shortName, path: `/${SLUG}` },
             ]),
           ]),

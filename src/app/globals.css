@@ -1,36 +1,76 @@
 @import "tailwindcss";
 
 :root {
+  /* Core */
   --background: #ffffff;
-  --foreground: #0a0a0a;
-  --brand-gold: #d4af37;
-  --brand-gold-dark: #8a6c1a;
-  --brand-silver: #c0c0c0;
+  --foreground: #0d1929;
+
+  /* Brand */
+  --brand-lime: #1a2e05;       /* lime-950 — header/footer surface */
+  --brand-lime-hover: #365314; /* lime-900 — hover */
+  --brand-lime-ink: #ffffff;
+  --brand-gold: #d4af37;       /* gold accent */
+  --brand-gold-dark: #b8932b;
+  --brand-gold-ink: #0d1929;
+
+  /* Surfaces */
+  --surface-muted: #f5f7fb;
+  --surface-border: #e5e7eb;
+  --ink-muted: #6b7280;
+
+  /* Plate-specific */
+  --plate-white: #ffffff;
+  --plate-yellow: #ffcc00;
+  --plate-text: #000000;
+
+  /* States */
+  --success: #22c55e;
+  --warning: #fbbf24;
+  --destructive: #ef4444;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-lime-brand: var(--brand-lime);
+  --color-lime-hover: var(--brand-lime-hover);
   --color-gold: var(--brand-gold);
   --color-gold-dark: var(--brand-gold-dark);
-  --color-silver: var(--brand-silver);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --color-plate-white: var(--plate-white);
+  --color-plate-yellow: var(--plate-yellow);
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-plate: var(--font-charles-wright), "Mark For Number Plates", "UKNumberPlate",
+    ui-monospace, "SFMono-Regular", monospace;
 }
 
+/* Light only — no dark-mode toggle in V1. */
 html,
 body {
   background: var(--background);
   color: var(--foreground);
+  color-scheme: light only;
 }
 
 body {
   font-family: var(--font-sans);
-  font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
 }
 
 ::selection {
   background: var(--brand-gold);
   color: #000;
+}
+
+/* Min 44px touch target on interactive elements where applied. */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Charles Wright via external CDN (matches live site). */
+@font-face {
+  font-family: "Charles Wright";
+  src: url("https://db.onlinewebfonts.com/t/8fdc34e98ec5f7ab1dbe9d04bea15ed5.woff2") format("woff2");
+  font-display: swap;
 }

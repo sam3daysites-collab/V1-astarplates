@@ -2,7 +2,17 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  const disallow = ["/checkout", "/order-success"];
+  const disallow = [
+    "/cart",
+    "/checkout",
+    "/order-success",
+    "/upload-documents",
+    "/track-order",
+    "/admin",
+    "/admin/",
+    "/auth",
+    "/api/",
+  ];
   return {
     rules: [
       {

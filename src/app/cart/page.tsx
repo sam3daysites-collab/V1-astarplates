@@ -1,11 +1,8 @@
 import Link from "next/link";
 import PlatePreview from "@/components/PlatePreview";
 import { buildMetadata } from "@/lib/seo";
-import {
-  FREE_SHIPPING_THRESHOLD,
-  STANDARD_SHIPPING,
-  calculateCartTotal,
-} from "@/lib/pricing";
+import { calculateCartTotal } from "@/lib/pricing";
+import { DELIVERY } from "@/lib/policies";
 import { formatGBP } from "@/lib/utils";
 
 export const metadata = buildMetadata({
@@ -21,17 +18,17 @@ const sampleLines = [
     productId: "3d-gel" as const,
     qty: "pair" as const,
     name: "3D Gel — Pair",
-    reg: "A* 1",
+    reg: "AB12 CDE",
   },
 ];
 
 export default function CartPage() {
   const summary = calculateCartTotal(
-    sampleLines.map((l) => ({ productId: l.productId, qty: l.qty })),
-  );
-  const remainingForFreeShip = Math.max(
-    0,
-    FREE_SHIPPING_THRESHOLD - summary.subtotal,
+    sampleLines.map((l) => ({
+      productId: l.productId,
+      qty: l.qty,
+      mode: "road-legal" as const,
+    })),
   );
 
   return (
@@ -44,6 +41,11 @@ export default function CartPage() {
           <h1 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-900">
             Your cart
           </h1>
+          <p className="mt-3 max-w-xl text-sm text-neutral-600">
+            Checkout is being finished. In the meantime you can preview line
+            items and totals here — server-authoritative pricing is already
+            wired up.
+          </p>
         </header>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[2fr_1fr]">
@@ -71,7 +73,7 @@ export default function CartPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-semibold text-neutral-900">
-                    {formatGBP(3199)}
+                    {formatGBP(summary.plateSubtotal)}
                   </p>
                   <button
                     type="button"
@@ -106,9 +108,7 @@ export default function CartPage() {
                 <div className="flex justify-between">
                   <dt className="text-neutral-600">Delivery</dt>
                   <dd className="font-medium text-neutral-900">
-                    {summary.shipping === 0
-                      ? "Free"
-                      : formatGBP(summary.shipping)}
+                    {DELIVERY.freeBadge}
                   </dd>
                 </div>
                 <div className="mt-2 flex justify-between border-t border-neutral-200 pt-3 text-base">
@@ -118,12 +118,6 @@ export default function CartPage() {
                   </dd>
                 </div>
               </dl>
-              {remainingForFreeShip > 0 && (
-                <p className="mt-3 rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-600">
-                  Add {formatGBP(remainingForFreeShip)} more to unlock free
-                  delivery.
-                </p>
-              )}
               <Link
                 href="/checkout"
                 className="mt-6 inline-flex w-full items-center justify-center rounded-md bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700"
@@ -131,8 +125,7 @@ export default function CartPage() {
                 Continue to checkout
               </Link>
               <p className="mt-3 text-center text-xs text-neutral-500">
-                Standard delivery {formatGBP(STANDARD_SHIPPING)}, free over{" "}
-                {formatGBP(FREE_SHIPPING_THRESHOLD)}.
+                {DELIVERY.headline} — {DELIVERY.subheadline.toLowerCase()}.
               </p>
             </div>
           </aside>

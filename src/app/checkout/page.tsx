@@ -13,7 +13,9 @@ export const metadata = buildMetadata({
 
 export default function CheckoutPage() {
   // Server-authoritative totals only — never trust client values.
-  const summary = calculateCartTotal([{ productId: "3d-gel", qty: "pair" }]);
+  const summary = calculateCartTotal([
+    { productId: "3d-gel", qty: "pair", mode: "road-legal" },
+  ]);
 
   return (
     <section className="bg-neutral-50">
@@ -117,11 +119,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-neutral-600">Delivery</dt>
-                  <dd className="font-medium text-neutral-900">
-                    {summary.shipping === 0
-                      ? "Free"
-                      : formatGBP(summary.shipping)}
-                  </dd>
+                  <dd className="font-medium text-neutral-900">Free</dd>
                 </div>
                 <div className="mt-2 flex justify-between border-t border-neutral-200 pt-3 text-base">
                   <dt className="font-semibold text-neutral-900">Total</dt>

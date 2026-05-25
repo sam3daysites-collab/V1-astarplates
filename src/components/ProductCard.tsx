@@ -10,7 +10,7 @@ interface ProductCardProps {
 
 export default function ProductCard({
   product,
-  previewReg = "A* 1",
+  previewReg = "AB12 CDE",
 }: ProductCardProps) {
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-neutral-900 to-black text-white shadow-[0_30px_80px_-40px_rgba(212,175,55,0.25)] transition hover:border-[#d4af37]/40">
@@ -19,17 +19,13 @@ export default function ProductCard({
           {product.badge}
         </span>
       )}
-      {!product.roadLegal && (
-        <span className="absolute left-4 top-4 z-10 rounded-full bg-red-500/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-red-300 ring-1 ring-red-400/40">
-          Not Road Legal
-        </span>
-      )}
 
       <div className="flex aspect-[16/9] items-center justify-center bg-gradient-to-br from-neutral-800 via-neutral-900 to-black">
         <PlatePreview
           registration={previewReg}
           style={product.id as PlateStyle}
           size="md"
+          compact
         />
       </div>
 
@@ -48,9 +44,7 @@ export default function ProductCard({
 
         <div className="mt-6 flex items-end justify-between">
           <div>
-            <p className="text-xs uppercase tracking-wider text-white/40">
-              From
-            </p>
+            <p className="text-xs uppercase tracking-wider text-white/40">From</p>
             <p className="text-2xl font-semibold text-white">
               {formatGBP(product.singlePence)}
               <span className="ml-1 text-sm font-normal text-white/50">
@@ -71,7 +65,7 @@ export default function ProductCard({
 
         <Link
           href={`/builder?style=${product.id}`}
-          className="mt-3 inline-flex items-center justify-center rounded-md bg-[#d4af37] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#e6c14d]"
+          className="mt-3 inline-flex items-center justify-center rounded-lg bg-[#d4af37] px-4 py-2.5 text-sm font-semibold text-[#0d1929] transition hover:bg-[#e6c14d]"
         >
           Build this plate
         </Link>

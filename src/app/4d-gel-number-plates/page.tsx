@@ -47,7 +47,7 @@ export default function Page() {
             productSchema(SLUG) ?? {},
             breadcrumbSchema([
               { name: "Home", path: "/" },
-              { name: "Road Legal", path: "/road-legal-number-plates" },
+              { name: "Choose Style", path: "/choose-style" },
               { name: product.shortName, path: `/${SLUG}` },
             ]),
           ]),
