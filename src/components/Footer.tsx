@@ -58,10 +58,13 @@ export default function Footer() {
       <div className="border-b border-white/10">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 py-10 md:grid-cols-3">
           {trust.map((t) => (
-            <div key={t.title} className="flex items-start gap-3">
+            <div
+              key={t.title}
+              className="flex items-start gap-3 rounded-xl bg-white/[0.04] p-4 transition hover:bg-white/[0.07]"
+            >
               <span
                 aria-hidden
-                className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-full bg-white/10 text-xl"
+                className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-full bg-[var(--brand-gold)]/15 text-xl ring-1 ring-[var(--brand-gold)]/30"
               >
                 {t.icon}
               </span>
@@ -78,11 +81,11 @@ export default function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-1">
           <div className="flex items-center gap-2 text-white">
-            <span className="grid h-9 w-9 place-items-center rounded-md bg-[#d4af37] font-bold text-[#0d1929]">
+            <span className="grid h-9 w-9 place-items-center rounded-md bg-[var(--brand-gold)] font-bold text-[var(--brand-lime)]">
               A★
             </span>
             <span className="text-lg font-semibold">
-              A<span className="text-[#d4af37]">★</span> Number Plates
+              A<span className="text-[var(--brand-gold)]">★</span> Number Plates
             </span>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-white/70">
@@ -90,7 +93,9 @@ export default function Footer() {
             in-house to BS AU 145e, dispatched same day via DPD.
           </p>
           <p className="mt-4 text-xs leading-relaxed text-white/60">
-            Proudly sponsoring <span className="text-[#d4af37]">A Child&apos;s Wish</span> charity.
+            Proudly sponsoring{" "}
+            <span className="text-[var(--brand-gold)]">A Child&apos;s Wish</span>{" "}
+            charity.
           </p>
         </div>
 
@@ -98,13 +103,15 @@ export default function Footer() {
         <FooterCol heading="Categories" links={categoryLinks} />
         <FooterCol heading="Help" links={helpLinks} />
         <div>
-          <h3 className="text-sm font-semibold text-white">Legal</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-[0.15em] text-[var(--brand-gold)]">
+            Legal
+          </h3>
           <ul className="mt-4 space-y-2 text-sm">
             {legalLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-white/70 transition hover:text-white"
+                  className="text-white/75 transition hover:text-[var(--brand-gold)]"
                 >
                   {link.label}
                 </Link>
@@ -118,7 +125,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/10">
+      <div className="border-t border-white/10 bg-black/20">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-3 px-6 py-6 text-xs text-white/60 md:flex-row md:items-center">
           <div>
             <p>© {year} ASTARNUMBERPLATES LIMITED. All rights reserved.</p>
@@ -130,7 +137,7 @@ export default function Footer() {
             DVLA Registered Number Plate Supplier · BS AU 145e ·{" "}
             <a
               href="mailto:admin@astarnumberplates.uk"
-              className="text-[#d4af37] hover:underline"
+              className="text-[var(--brand-gold)] hover:underline"
             >
               admin@astarnumberplates.uk
             </a>
@@ -150,13 +157,15 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h3 className="text-sm font-semibold text-white">{heading}</h3>
+      <h3 className="text-sm font-semibold uppercase tracking-[0.15em] text-[var(--brand-gold)]">
+        {heading}
+      </h3>
       <ul className="mt-4 space-y-2 text-sm">
         {links.map((link) => (
           <li key={link.href}>
             <Link
               href={link.href}
-              className="text-white/70 transition hover:text-white"
+              className="text-white/75 transition hover:text-[var(--brand-gold)]"
             >
               {link.label}
             </Link>
