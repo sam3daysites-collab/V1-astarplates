@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ImageSlot from "./ImageSlot";
 
 interface CategoryPageProps {
   eyebrow: string;
@@ -10,6 +11,12 @@ interface CategoryPageProps {
   secondaryCtaHref?: string;
   secondaryCtaLabel?: string;
   body?: React.ReactNode;
+  /**
+   * Optional gallery labels — when populated (later) the strip becomes a
+   * real image carousel. Defaults to 2 placeholder slots labelled by the
+   * eyebrow so the page never looks like a broken image grid.
+   */
+  galleryLabels?: [string, string];
 }
 
 export default function CategoryPage({
@@ -22,7 +29,13 @@ export default function CategoryPage({
   secondaryCtaHref = "/contact",
   secondaryCtaLabel = "Contact us",
   body,
+  galleryLabels,
 }: CategoryPageProps) {
+  const labels: [string, string] = galleryLabels ?? [
+    `${eyebrow} — overview`,
+    `${eyebrow} — detail`,
+  ];
+
   return (
     <>
       <section className="relative overflow-hidden bg-[var(--brand-lime)] text-white">
@@ -30,8 +43,8 @@ export default function CategoryPage({
           aria-hidden
           className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(212,175,55,0.18),transparent_60%)]"
         />
-        <div className="relative mx-auto max-w-4xl px-6 py-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#d4af37]">
+        <div className="relative mx-auto max-w-4xl px-6 py-16 sm:py-20">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brand-gold)]">
             {eyebrow}
           </p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
@@ -41,13 +54,13 @@ export default function CategoryPage({
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
               href={primaryCtaHref}
-              className="inline-flex items-center justify-center rounded-lg bg-[#d4af37] px-6 py-3 text-sm font-semibold text-[#0d1929] transition hover:bg-[#e6c14d]"
+              className="touch-target inline-flex items-center justify-center rounded-lg bg-[var(--brand-gold)] px-6 py-3 text-sm font-semibold text-[var(--brand-lime)] transition hover:bg-[#e6c14d]"
             >
               {primaryCtaLabel}
             </Link>
             <Link
               href={secondaryCtaHref}
-              className="inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/40"
+              className="touch-target inline-flex items-center justify-center rounded-lg border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-[var(--brand-gold)]"
             >
               {secondaryCtaLabel}
             </Link>
@@ -56,14 +69,28 @@ export default function CategoryPage({
       </section>
 
       <section className="bg-white">
-        <div className="mx-auto max-w-4xl px-6 py-16">
-          <ul className="grid gap-3 text-sm text-neutral-700 sm:grid-cols-2">
+        <div className="mx-auto max-w-4xl px-6 py-12 sm:py-16">
+          {/* Image strip — 2 placeholders, lazy. Becomes a real carousel later. */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {labels.map((label) => (
+              <ImageSlot
+                key={label}
+                kind="style"
+                ratio="4/3"
+                alt={label}
+                label={label}
+                rounded="xl"
+              />
+            ))}
+          </div>
+
+          <ul className="mt-10 grid gap-3 text-sm text-neutral-700 sm:grid-cols-2">
             {bullets.map((b) => (
               <li
                 key={b}
-                className="flex items-start gap-2 rounded-xl border border-neutral-200 bg-neutral-50 p-4"
+                className="flex items-start gap-2 rounded-xl border border-neutral-200 bg-[var(--brand-cream)] p-4"
               >
-                <span className="mt-1 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#d4af37]" />
+                <span className="mt-1 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--brand-gold)]" />
                 <span>{b}</span>
               </li>
             ))}
@@ -78,19 +105,19 @@ export default function CategoryPage({
           <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-neutral-200 pt-8">
             <Link
               href="/builder"
-              className="inline-flex items-center justify-center rounded-lg bg-[var(--brand-lime)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-lime-hover)]"
+              className="touch-target inline-flex items-center justify-center rounded-lg bg-[var(--brand-lime)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-lime-hover)]"
             >
-              Build my plate
+              Build my plate →
             </Link>
             <Link
               href="/pricing"
-              className="text-sm font-semibold text-neutral-900 underline-offset-4 hover:underline"
+              className="text-sm font-semibold text-[var(--brand-lime)] underline-offset-4 hover:underline"
             >
               See pricing →
             </Link>
             <Link
               href="/contact"
-              className="text-sm font-semibold text-neutral-900 underline-offset-4 hover:underline"
+              className="text-sm font-semibold text-[var(--brand-lime)] underline-offset-4 hover:underline"
             >
               Talk to us →
             </Link>
