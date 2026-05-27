@@ -28,17 +28,31 @@ interface PlatePreviewProps {
 }
 
 const SIZE_CLASSES: Record<NonNullable<PlatePreviewProps["size"]>, string> = {
-  sm: "h-12 text-xl px-3 sm:h-14 sm:text-2xl sm:px-4",
-  md: "h-16 text-3xl px-4 sm:h-20 sm:text-4xl sm:px-5",
-  lg: "h-20 text-3xl px-4 sm:h-24 sm:text-5xl sm:px-6 md:h-28 md:text-6xl md:px-7",
-  xl: "h-24 text-4xl px-5 sm:h-28 sm:text-5xl sm:px-7 md:h-32 md:text-7xl md:px-8",
+  sm: "h-12 text-2xl px-3 sm:h-14 sm:text-3xl sm:px-4",
+  md: "h-16 text-4xl px-4 sm:h-20 sm:text-5xl sm:px-5",
+  lg: "h-20 text-5xl px-4 sm:h-24 sm:text-6xl sm:px-6 md:h-28 md:text-7xl md:px-7",
+  xl: "h-24 text-6xl px-5 sm:h-28 sm:text-7xl sm:px-7 md:h-32 md:text-[5rem] md:px-8",
 };
 
+// Calmer shadows at small sizes (cleaner text), full depth at lg/xl.
 const STYLE_CHARS: Record<PlateStyle, string> = {
   "standard-2d": "text-black",
   "3d-gel":
+    "text-black [text-shadow:_0_1px_0_rgba(0,0,0,0.55),0_2px_2px_rgba(0,0,0,0.3)]",
+  "4d":
+    "text-black [text-shadow:_1px_1px_0_rgba(0,0,0,0.9),2px_2px_0_rgba(0,0,0,0.55)]",
+  "4d-gel":
+    "text-black [text-shadow:_1px_1px_0_rgba(0,0,0,0.75),0_3px_4px_rgba(0,0,0,0.35)]",
+  "4d-retro":
+    "text-[#1f2a05] [text-shadow:_1px_1px_0_rgba(0,0,0,0.9),2px_2px_0_rgba(0,0,0,0.6)] italic",
+};
+
+const STYLE_CHARS_LG: Record<PlateStyle, string> = {
+  "standard-2d": "text-black",
+  "3d-gel":
     "text-black [text-shadow:_0_2px_0_rgba(0,0,0,0.55),0_3px_3px_rgba(0,0,0,0.35)]",
-  "4d": "text-black [text-shadow:_2px_2px_0_rgba(0,0,0,0.9),3px_3px_0_rgba(0,0,0,0.55)]",
+  "4d":
+    "text-black [text-shadow:_2px_2px_0_rgba(0,0,0,0.9),3px_3px_0_rgba(0,0,0,0.55)]",
   "4d-gel":
     "text-black [text-shadow:_2px_2px_0_rgba(0,0,0,0.75),0_4px_5px_rgba(0,0,0,0.4)]",
   "4d-retro":
@@ -75,6 +89,8 @@ export default function PlatePreview({
   const display = (registration || "AB12 CDE").toUpperCase();
   const bg = position === "front" ? "bg-white" : "bg-[#ffcc00]";
   const isShow = mode === "show";
+  const isLarge = size === "lg" || size === "xl";
+  const styleClass = isLarge ? STYLE_CHARS_LG[style] : STYLE_CHARS[style];
 
   // In show mode, prefer the chosen country chip; otherwise fall back to the
   // road-legal identifier (UK/GB/ENG/SCO/CYM/none).
@@ -91,10 +107,10 @@ export default function PlatePreview({
       )}
       <div
         className={cn(
-          "relative inline-flex items-center justify-center rounded-md border-2 border-black/80 font-mono font-bold tracking-[0.18em] shadow-[0_8px_22px_-12px_rgba(0,0,0,0.55)] select-none",
+          "font-plate relative inline-flex items-center justify-center rounded-md border-2 border-black/80 font-bold tracking-[0.08em] shadow-[0_8px_22px_-12px_rgba(0,0,0,0.55)] select-none",
           bg,
           SIZE_CLASSES[size],
-          STYLE_CHARS[style],
+          styleClass,
         )}
         aria-label={`Preview of ${position} ${isShow ? "show" : "road legal"} plate ${display}`}
       >
