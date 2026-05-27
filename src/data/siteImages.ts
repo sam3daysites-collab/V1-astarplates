@@ -80,10 +80,31 @@ export const STYLE_GALLERIES: Record<PlateProductId, SiteImage[]> = {
 /* Category galleries — 2 images per category, keyed by URL slug.       */
 /* ------------------------------------------------------------------ */
 export const CATEGORY_GALLERIES: Record<string, SiteImage[]> = {
-  "oversize-number-plates": [],
+  "oversize-number-plates": [
+    {
+      src: "/images/categories/oversize-number-plates/oversize-number-plate-yellow.webp",
+      alt: "Oversize yellow number plate example by A Star Number Plates",
+      caption: "Oversize rear plate example",
+      category: "category",
+    },
+  ],
   "hex-number-plates": [],
-  "import-number-plates": [],
-  "motorbike-number-plates": [],
+  "import-number-plates": [
+    {
+      src: "/images/categories/import-number-plates/import-number-plate-square-yellow.webp",
+      alt: "Square import number plate example by A Star Number Plates",
+      caption: "Import-size plate example",
+      category: "category",
+    },
+  ],
+  "motorbike-number-plates": [
+    {
+      src: "/images/categories/motorbike-number-plates/motorbike-number-plate-yellow.webp",
+      alt: "Motorbike number plate example by A Star Number Plates",
+      caption: "Motorbike plate example",
+      category: "category",
+    },
+  ],
   "number-plate-magnets": [],
   "number-plate-clips": [],
   "anti-theft-number-plate-screws": [],

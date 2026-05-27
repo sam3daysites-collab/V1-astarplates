@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ImageSlot from "./ImageSlot";
+import CategoryImageCell from "./CategoryImageCell";
 import { getCategoryImages } from "@/data/siteImages";
 
 interface CategoryPageProps {
@@ -78,22 +79,21 @@ export default function CategoryPage({
       <section className="bg-white">
         <div className="mx-auto max-w-4xl px-6 py-12 sm:py-16">
           {/* Image strip — 2 slots. Real images render when the manifest has
-              entries for `slug`; otherwise placeholders. Both are lazy. */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              entries for `slug` AND the file loads; otherwise the placeholder
+              shows. Cells auto-fallback if the network request 404s. Lazy. */}
+          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
             {labels.map((label, i) => {
               const img = real[i];
               if (img) {
                 return (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <CategoryImageCell
                     key={label}
                     src={img.src}
                     alt={img.alt}
+                    caption={img.caption}
                     width={img.width}
                     height={img.height}
-                    loading="lazy"
-                    decoding="async"
-                    className="aspect-[4/3] w-full rounded-xl border border-neutral-200 object-cover"
+                    fallbackLabel={label}
                   />
                 );
               }
