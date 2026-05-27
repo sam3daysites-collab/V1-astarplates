@@ -124,6 +124,67 @@ export default function CategoryPage({
           </div>
         </div>
       </section>
+
+      {/* Related links strip — keeps every page connected to the funnel. */}
+      <section className="border-t border-neutral-200 bg-[var(--brand-cream)]">
+        <div className="mx-auto max-w-4xl px-6 py-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brand-lime)]/70">
+            Keep exploring
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <RelatedLink
+              href="/choose-style"
+              title="All plate styles"
+              body="Standard 2D, 3D Gel, 4D, 4D Gel, 4D Retro."
+            />
+            <RelatedLink
+              href="/pricing"
+              title="Pricing"
+              body="Singles, pairs and accessory pricing."
+            />
+            <RelatedLink
+              href="/compliance"
+              title="Compliance & law"
+              body="BS AU 145e and UK road-legal rules."
+            />
+            <RelatedLink
+              href="/number-plate-accessories"
+              title="Accessories"
+              body="Fixing kits, sticky strips, fittings."
+            />
+          </div>
+        </div>
+      </section>
     </>
+  );
+}
+
+function RelatedLink({
+  href,
+  title,
+  body,
+}: {
+  href: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="touch-target group flex items-start gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-[var(--brand-gold)] hover:shadow-sm"
+    >
+      <span
+        aria-hidden
+        className="mt-0.5 grid h-7 w-7 flex-shrink-0 place-items-center rounded-full bg-[var(--brand-gold)]/15 ring-1 ring-[var(--brand-gold)]/40 text-xs font-bold text-[var(--brand-lime)] transition group-hover:bg-[var(--brand-gold)]"
+      >
+        →
+      </span>
+      <span className="flex flex-col">
+        <span className="text-sm font-semibold text-[var(--brand-lime)]">
+          {title}
+        </span>
+        <span className="text-xs text-neutral-600">{body}</span>
+      </span>
+    </Link>
   );
 }

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import PlatePreview, { type PlateStyle } from "./PlatePreview";
 import ImageSlot from "./ImageSlot";
-import type { PlateProduct } from "@/lib/products";
+import ProductCard from "./ProductCard";
+import { PLATE_PRODUCTS, type PlateProduct } from "@/lib/products";
 import { formatGBP } from "@/lib/utils";
 
 interface ProductPageBodyProps {
@@ -17,6 +18,7 @@ const GALLERY_LABELS = [
 
 export default function ProductPageBody({ product }: ProductPageBodyProps) {
   const images = product.images ?? [];
+  const relatedStyles = PLATE_PRODUCTS.filter((p) => p.id !== product.id);
 
   return (
     <>
@@ -185,35 +187,92 @@ export default function ProductPageBody({ product }: ProductPageBodyProps) {
         </div>
       </section>
 
-      <section className="bg-white">
-        <div className="mx-auto grid max-w-7xl gap-6 px-6 py-16 md:grid-cols-3">
-          <div className="rounded-2xl border border-neutral-200 bg-[var(--brand-cream)] p-6">
-            <h3 className="text-base font-semibold text-neutral-900">
-              Road legal
-            </h3>
-            <p className="mt-2 text-sm text-neutral-600">
-              Pressed to BS AU 145e. MOT-ready, DVLA accepted, supplier-marked.
-            </p>
+      {/* Trust strip — 4 brand cues, no new copy. */}
+      <section className="border-t border-neutral-200 bg-white">
+        <div className="mx-auto grid max-w-7xl gap-4 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
+          <TrustItem
+            title="Road legal"
+            body="Pressed to BS AU 145e. MOT-ready, DVLA accepted, supplier-marked."
+          />
+          <TrustItem
+            title="Same-day press"
+            body="Order before 11am Mon–Sat and your plates go on the next working day's DPD run."
+          />
+          <TrustItem
+            title="Free next-day"
+            body="DPD tracked next-day, free on every order. No minimum spend."
+          />
+          <TrustItem
+            title="Document verified"
+            body="We verify your V5C, licence or lease before pressing — keeping you legal."
+          />
+        </div>
+      </section>
+
+      {/* Related styles — cross-link to other finishes. */}
+      <section className="border-t border-neutral-200 bg-[var(--brand-cream)] py-16">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+            <div className="max-w-xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brand-lime)]/70">
+                Compare finishes
+              </p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+                Other plate styles
+              </h2>
+              <p className="mt-2 text-sm text-neutral-600">
+                Every finish is road-legal capable, BS AU 145e and same-day
+                pressed.
+              </p>
+            </div>
+            <Link
+              href="/choose-style"
+              className="text-sm font-semibold text-[var(--brand-lime)] underline-offset-4 hover:underline"
+            >
+              Compare all styles →
+            </Link>
           </div>
-          <div className="rounded-2xl border border-neutral-200 bg-[var(--brand-cream)] p-6">
-            <h3 className="text-base font-semibold text-neutral-900">
-              Same-day press
-            </h3>
-            <p className="mt-2 text-sm text-neutral-600">
-              Order before 11am Mon–Sat and your plates go on the next working
-              day&apos;s DPD run.
-            </p>
+
+          {/* Mobile: snap scroll. Desktop: 4-col row. */}
+          <div className="mt-8 -mx-6 px-6 md:hidden">
+            <div className="snap-row flex gap-4 overflow-x-auto pb-4">
+              {relatedStyles.map((p) => (
+                <div
+                  key={p.id}
+                  className="min-w-[78vw] max-w-[82vw] flex-shrink-0"
+                >
+                  <ProductCard product={p} />
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="rounded-2xl border border-neutral-200 bg-[var(--brand-cream)] p-6">
-            <h3 className="text-base font-semibold text-neutral-900">
-              Free next-day delivery
-            </h3>
-            <p className="mt-2 text-sm text-neutral-600">
-              DPD tracked next-day, free on every order. No minimum spend.
-            </p>
+
+          <div className="mt-8 hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-4">
+            {relatedStyles.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+function TrustItem({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl border border-neutral-200 bg-[var(--brand-cream)] p-4">
+      <span
+        aria-hidden
+        className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-[var(--brand-gold)]/20 ring-1 ring-[var(--brand-gold)]/40"
+      >
+        <span className="h-2 w-2 rounded-full bg-[var(--brand-gold)]" />
+      </span>
+      <div>
+        <p className="text-sm font-semibold text-[var(--brand-lime)]">
+          {title}
+        </p>
+        <p className="mt-1 text-xs leading-relaxed text-neutral-600">{body}</p>
+      </div>
+    </div>
   );
 }

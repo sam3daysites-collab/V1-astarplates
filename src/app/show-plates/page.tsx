@@ -59,13 +59,13 @@ export default function Page() {
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
               href="/builder"
-              className="inline-flex items-center justify-center rounded-lg bg-[#d4af37] px-6 py-3 text-sm font-semibold text-[#0d1929] transition hover:bg-[#e6c14d]"
+              className="touch-target inline-flex items-center justify-center rounded-lg bg-[var(--brand-gold)] px-6 py-3 text-sm font-semibold text-[var(--brand-lime)] transition hover:bg-[#e6c14d]"
             >
-              Build a show plate
+              Build a show plate →
             </Link>
             <Link
               href="/road-legal-number-plates"
-              className="inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/40"
+              className="touch-target inline-flex items-center justify-center rounded-lg border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-[var(--brand-gold)]"
             >
               Need road legal?
             </Link>
@@ -73,14 +73,25 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="bg-white">
+      <section className="bg-[var(--brand-cream)]">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-3xl border border-neutral-200 bg-neutral-900 p-8 text-white">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/40">
-                Show plate preview
-              </p>
-              <div className="mt-6 flex flex-col items-center gap-6">
+            <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-[0_30px_80px_-40px_rgba(26,46,5,0.4)]">
+              <div className="flex items-center justify-between gap-3 border-b border-neutral-200 bg-[var(--brand-cream)] px-6 py-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--brand-lime)]/70">
+                  Show plate preview
+                </p>
+                <span className="rounded-full bg-red-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700 ring-1 ring-red-200">
+                  Show
+                </span>
+              </div>
+              <div
+                className="flex flex-col items-center gap-6 px-6 py-10"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(60% 70% at 50% 0%, rgba(212,175,55,0.10), transparent 60%)",
+                }}
+              >
                 <PlatePreview
                   registration="AB12 CDE"
                   style="4d-gel"
