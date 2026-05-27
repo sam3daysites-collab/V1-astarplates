@@ -44,7 +44,7 @@ const STYLE_CHARS: Record<PlateStyle, string> = {
   "4d-gel":
     "text-black [text-shadow:_1px_1px_0_rgba(0,0,0,0.75),0_3px_4px_rgba(0,0,0,0.35)]",
   "4d-retro":
-    "text-[#1f2a05] [text-shadow:_1px_1px_0_rgba(0,0,0,0.9),2px_2px_0_rgba(0,0,0,0.6)] italic",
+    "text-black [-webkit-text-stroke:0.4px_#4a4a4a] [text-shadow:_-0.5px_-0.5px_0_rgba(255,255,255,0.55),1px_1px_0_#1a1a1a,2px_2px_0_#000,3px_3px_3px_rgba(0,0,0,0.45)]",
 };
 
 const STYLE_CHARS_LG: Record<PlateStyle, string> = {
@@ -56,7 +56,7 @@ const STYLE_CHARS_LG: Record<PlateStyle, string> = {
   "4d-gel":
     "text-black [text-shadow:_2px_2px_0_rgba(0,0,0,0.75),0_4px_5px_rgba(0,0,0,0.4)]",
   "4d-retro":
-    "text-[#1f2a05] [text-shadow:_1px_1px_0_rgba(0,0,0,0.95),2px_2px_0_rgba(0,0,0,0.75),3px_3px_4px_rgba(0,0,0,0.35)] italic",
+    "text-black [-webkit-text-stroke:0.75px_#525252] [text-shadow:_-1px_-1px_0_rgba(255,255,255,0.6),1px_1px_0_#181818,2px_2px_0_#000,3px_3px_0_#000,4px_4px_5px_rgba(0,0,0,0.45)]",
 };
 
 const FLAG_STYLES: Record<

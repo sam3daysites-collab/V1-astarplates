@@ -11,6 +11,7 @@ export const metadata = buildMetadata({
 export default function Page() {
   return (
     <CategoryPage
+      slug="number-plate-magnets"
       eyebrow="Magnets"
       title="Number plate magnets"
       intro="Magnetic mounting is a clean, hole-free way to attach plates to compatible vehicles — provided the bumper recess and any internal trim are ferrous. We don't list magnets in the standard accessory mix because fit varies; contact us with your vehicle details and we'll confirm compatibility."

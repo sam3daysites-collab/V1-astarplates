@@ -11,6 +11,7 @@ export const metadata = buildMetadata({
 export default function Page() {
   return (
     <CategoryPage
+      slug="oversize-number-plates"
       eyebrow="Oversize plates"
       title="Oversize rear number plates — 533 × 152mm"
       intro="A larger rear plate for vehicles that have a taller plate recess. Same Charles Wright font, same BS AU 145e standard, just a bigger panel."

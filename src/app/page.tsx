@@ -6,6 +6,7 @@ import ImageSlot from "@/components/ImageSlot";
 import { PLATE_PRODUCTS } from "@/lib/products";
 import { buildMetadata } from "@/lib/seo";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/schema";
+import { getRecentFits, type RecentFit } from "@/data/siteImages";
 
 export const metadata = buildMetadata({
   title: "Premium UK Number Plates — Pressed Same Day",
@@ -13,6 +14,13 @@ export const metadata = buildMetadata({
     "Road legal 2D, 3D Gel, 4D and 4D Gel number plates pressed to BS AU 145e. Free next-day delivery on orders before 11am Mon–Sat, document verified.",
   path: "/",
 });
+
+const trustChips = [
+  { label: "BS AU 145e", note: "2021 standard" },
+  { label: "DVLA Verified", note: "Document checked" },
+  { label: "Same-Day Press", note: "Order by 11am" },
+  { label: "Free DPD", note: "Tracked next-day" },
+];
 
 const trustPoints = [
   {
@@ -31,13 +39,6 @@ const trustPoints = [
     title: "Free next-day delivery",
     body: "Free DPD tracked next-day on every order placed before 11am Mon–Sat. No minimum spend, no extras.",
   },
-];
-
-const recentFits = [
-  { reg: "GT24 RBO", car: "Audi RS3", style: "4d-gel" as const },
-  { reg: "MX22 EVO", car: "Lamborghini Huracán", style: "4d" as const },
-  { reg: "AB73 XYZ", car: "BMW M3", style: "3d-gel" as const },
-  { reg: "RR21 SVR", car: "Range Rover Sport", style: "4d-retro" as const },
 ];
 
 const faqs = [
@@ -66,8 +67,9 @@ const faqs = [
 export default function Home() {
   return (
     <>
-      <TopTrustBar />
+      <Eyebrow />
       <Hero />
+      <TrustChips />
       <StyleGrid />
       <RecentFits />
       <BuilderCta />
@@ -87,9 +89,9 @@ export default function Home() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Top trust bar — slim, neutral, sits above the hero on every page.   */
+/* Eyebrow — slim trust line above the hero on every page.            */
 /* ------------------------------------------------------------------ */
-function TopTrustBar() {
+function Eyebrow() {
   const points = [
     "BS AU 145e",
     "DVLA Registered Supplier",
@@ -115,6 +117,7 @@ function TopTrustBar() {
 
 /* ------------------------------------------------------------------ */
 /* Hero — cream base, dark-green headline, gold CTA, large live plate. */
+/* No image placeholder inside the preview card; clean & finished.    */
 /* ------------------------------------------------------------------ */
 function Hero() {
   return (
@@ -158,26 +161,6 @@ function Hero() {
               View pricing
             </Link>
           </div>
-          <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 text-sm">
-            <div>
-              <dt className="text-neutral-500">Pressed</dt>
-              <dd className="mt-1 text-base font-semibold text-neutral-900">
-                Same day
-              </dd>
-            </div>
-            <div>
-              <dt className="text-neutral-500">Compliance</dt>
-              <dd className="mt-1 text-base font-semibold text-neutral-900">
-                BS AU 145e
-              </dd>
-            </div>
-            <div>
-              <dt className="text-neutral-500">Delivery</dt>
-              <dd className="mt-1 text-base font-semibold text-neutral-900">
-                Tracked UK
-              </dd>
-            </div>
-          </dl>
         </div>
         <div className="relative">
           <div
@@ -209,18 +192,9 @@ function Hero() {
             </div>
             <div className="mt-8 flex items-center justify-between rounded-xl border border-neutral-200 bg-[var(--brand-cream)] px-4 py-3 text-sm">
               <span className="text-neutral-600">4D Gel pair, road legal</span>
-              <span className="font-semibold text-[var(--brand-lime)]">£37.99</span>
-            </div>
-            {/* Future hero photo slot — sits below the live preview as a "real fit" image when available. */}
-            <div className="mt-4">
-              <ImageSlot
-                kind="hero"
-                ratio="16/7"
-                alt="Hero plate fitted to vehicle"
-                label="Hero fit photo"
-                priority
-                rounded="xl"
-              />
+              <span className="font-semibold text-[var(--brand-lime)]">
+                £37.99
+              </span>
             </div>
           </div>
         </div>
@@ -230,7 +204,41 @@ function Hero() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Style grid — white surface, snap scroller on mobile, 3-col desktop. */
+/* Trust chips — pill row beneath the hero, above the style cards.    */
+/* ------------------------------------------------------------------ */
+function TrustChips() {
+  return (
+    <section className="border-y border-neutral-200 bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-6">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {trustChips.map((chip) => (
+            <li
+              key={chip.label}
+              className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-[var(--brand-cream)] px-4 py-3"
+            >
+              <span
+                aria-hidden
+                className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-[var(--brand-gold)]/20 ring-1 ring-[var(--brand-gold)]/40"
+              >
+                <span className="h-2 w-2 rounded-full bg-[var(--brand-gold)]" />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-[var(--brand-lime)]">
+                  {chip.label}
+                </p>
+                <p className="truncate text-xs text-neutral-600">{chip.note}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Style grid — 5 plate styles. Snap-scroll on mobile, 5-col on xl.   */
+/* Compare-prices link sits inline with the header.                   */
 /* ------------------------------------------------------------------ */
 function StyleGrid() {
   return (
@@ -245,25 +253,33 @@ function StyleGrid() {
               Pick a finish. We&apos;ll press it today.
             </h2>
             <p className="mt-3 text-neutral-600">
-              From a clean Standard 2D to a flagship 4D Gel, every road legal
-              plate is BS AU 145e and DVLA approved.
+              Five premium finishes — Standard 2D, 3D Gel, 4D, 4D Gel and
+              4D Retro. Every road legal plate is BS AU 145e and DVLA approved.
             </p>
           </div>
-          <Link
-            href="/choose-style"
-            className="text-sm font-semibold text-[var(--brand-lime)] underline-offset-4 hover:underline"
-          >
-            Compare all styles →
-          </Link>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              href="/pricing"
+              className="text-sm font-semibold text-[var(--brand-lime)] underline-offset-4 hover:underline"
+            >
+              Compare prices →
+            </Link>
+            <Link
+              href="/choose-style"
+              className="text-sm font-semibold text-[var(--brand-lime)] underline-offset-4 hover:underline"
+            >
+              Compare styles →
+            </Link>
+          </div>
         </div>
 
         {/* Mobile: snap scroller */}
-        <div className="mt-10 -mx-6 px-6 md:hidden">
+        <div className="mt-10 -mx-6 px-6 lg:hidden">
           <div className="snap-row flex gap-4 overflow-x-auto pb-4">
             {PLATE_PRODUCTS.map((product) => (
               <div
                 key={product.id}
-                className="min-w-[78vw] max-w-[82vw] flex-shrink-0"
+                className="min-w-[78vw] max-w-[82vw] flex-shrink-0 sm:min-w-[44vw] sm:max-w-[46vw]"
               >
                 <ProductCard product={product} />
               </div>
@@ -271,8 +287,8 @@ function StyleGrid() {
           </div>
         </div>
 
-        {/* Desktop: 3-col grid */}
-        <div className="mt-10 hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3">
+        {/* Desktop: 5-col row at xl, 3-col at lg */}
+        <div className="mt-10 hidden gap-6 lg:grid lg:grid-cols-3 xl:grid-cols-5">
           {PLATE_PRODUCTS.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -297,9 +313,10 @@ function StyleGrid() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Recent fits — image slots only, lazy.                              */
+/* Recent fits — manifest-driven, placeholders until real photos land. */
 /* ------------------------------------------------------------------ */
 function RecentFits() {
+  const fits = getRecentFits(4);
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6">
@@ -324,37 +341,63 @@ function RecentFits() {
           </Link>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-          {recentFits.map((fit) => (
-            <figure
-              key={fit.reg}
-              className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:border-[var(--brand-gold)]"
-            >
-              <ImageSlot
-                kind="recent-fit"
-                alt={`${fit.car} fitted with ${fit.style} plate ${fit.reg}`}
-                label={fit.car}
-                rounded="md"
-                className="rounded-none border-0"
-              />
-              <figcaption className="flex items-center justify-between gap-2 px-4 py-3">
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-neutral-500">
-                    {fit.car}
-                  </p>
-                  <p className="font-plate text-base font-bold tracking-wider text-neutral-900">
-                    {fit.reg}
-                  </p>
-                </div>
-                <span className="rounded-full border border-[var(--brand-gold)]/40 bg-[var(--brand-cream)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-lime)]">
-                  {fit.style.replace("-", " ")}
-                </span>
-              </figcaption>
-            </figure>
+        {/* Mobile: snap row */}
+        <div className="mt-10 -mx-6 px-6 sm:hidden">
+          <div className="snap-row flex gap-4 overflow-x-auto pb-4">
+            {fits.map((fit) => (
+              <RecentFitCard key={fit.reg} fit={fit} />
+            ))}
+          </div>
+        </div>
+
+        {/* sm+: grid */}
+        <div className="mt-10 hidden grid-cols-2 gap-4 sm:grid sm:gap-6 lg:grid-cols-4">
+          {fits.map((fit) => (
+            <RecentFitCard key={fit.reg} fit={fit} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function RecentFitCard({ fit }: { fit: RecentFit }) {
+  return (
+    <figure className="group min-w-[70vw] flex-shrink-0 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:border-[var(--brand-gold)] sm:min-w-0">
+      {fit.image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={fit.image.src}
+          alt={fit.image.alt}
+          width={fit.image.width}
+          height={fit.image.height}
+          loading="lazy"
+          decoding="async"
+          className="aspect-[4/3] w-full object-cover"
+        />
+      ) : (
+        <ImageSlot
+          kind="recent-fit"
+          alt={`${fit.vehicle} fitted with ${fit.styleId} plate ${fit.reg}`}
+          label={fit.vehicle}
+          rounded="md"
+          className="rounded-none border-0"
+        />
+      )}
+      <figcaption className="flex items-center justify-between gap-2 px-4 py-3">
+        <div>
+          <p className="text-xs uppercase tracking-wider text-neutral-500">
+            {fit.vehicle}
+          </p>
+          <p className="font-plate text-base font-bold tracking-wider text-neutral-900">
+            {fit.reg}
+          </p>
+        </div>
+        <span className="rounded-full border border-[var(--brand-gold)]/40 bg-[var(--brand-cream)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-lime)]">
+          {fit.styleId.replace("-", " ")}
+        </span>
+      </figcaption>
+    </figure>
   );
 }
 
@@ -385,7 +428,7 @@ function BuilderCta() {
               href="/builder"
               className="touch-target inline-flex items-center justify-center rounded-md bg-[var(--brand-gold)] px-6 py-3 text-sm font-semibold text-[var(--brand-lime)] transition hover:bg-[#e6c14d]"
             >
-              Open the builder →
+              Build Your Plate →
             </Link>
             <Link
               href="/choose-style"
@@ -500,7 +543,7 @@ function ProcessCard({
 }
 
 /* ------------------------------------------------------------------ */
-/* Trust band — full-width white, four neutral trust points.           */
+/* Trust band — full-width cream, four neutral trust points.           */
 /* ------------------------------------------------------------------ */
 function TrustBand() {
   return (

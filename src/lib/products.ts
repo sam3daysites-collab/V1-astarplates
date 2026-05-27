@@ -14,6 +14,12 @@ export interface PlateProduct {
   badge?: string;
   singlePence: number;
   pairPence: number;
+  /**
+   * Optional gallery of showcase photos for the style. Forward-compatible
+   * field — when populated (later) ProductCard / ProductPageBody will swap
+   * placeholders for real images. Keep ordered: first item is the primary.
+   */
+  images?: string[];
 }
 
 export const PLATE_PRODUCTS: PlateProduct[] = [

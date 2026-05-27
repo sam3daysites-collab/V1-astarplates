@@ -1,33 +1,68 @@
 import Link from "next/link";
 import PlatePreview, { type PlateStyle } from "./PlatePreview";
+import ImageSlot from "./ImageSlot";
 import type { PlateProduct } from "@/lib/products";
 import { formatGBP } from "@/lib/utils";
+import { getStyleImages } from "@/data/siteImages";
 
 interface ProductCardProps {
   product: PlateProduct;
   previewReg?: string;
 }
 
+/**
+ * Premium plate card.
+ *
+ * Media area pulls the first style image from the central manifest. If the
+ * manifest has no entry yet the card renders an ImageSlot placeholder so
+ * the layout is identical and there's no shift when real photos land.
+ */
 export default function ProductCard({
   product,
   previewReg = "AB12 CDE",
 }: ProductCardProps) {
+  const primary = getStyleImages(product.id)[0];
+
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--brand-gold)] hover:shadow-[0_24px_60px_-32px_rgba(26,46,5,0.35)]">
       {product.badge && (
-        <span className="absolute right-4 top-4 z-10 inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-gold)] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-lime)] shadow-sm">
+        <span className="absolute right-4 top-4 z-20 inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-gold)] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-lime)] shadow-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-lime)]" />
           {product.badge}
         </span>
       )}
 
-      <div className="flex aspect-[16/9] items-center justify-center bg-[var(--brand-cream)] border-b border-neutral-200">
-        <PlatePreview
-          registration={previewReg}
-          style={product.id as PlateStyle}
-          size="md"
-          compact
-        />
+      {/* Media: manifest image, or placeholder + plate chip. */}
+      <div className="relative border-b border-neutral-200">
+        {primary ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={primary.src}
+            alt={primary.alt}
+            width={primary.width}
+            height={primary.height}
+            loading="lazy"
+            decoding="async"
+            className="aspect-[4/3] w-full object-cover"
+          />
+        ) : (
+          <ImageSlot
+            kind="style"
+            ratio="4/3"
+            alt={`${product.name} showcase image`}
+            label={product.shortName}
+            rounded="md"
+            className="rounded-none border-0"
+          />
+        )}
+        <span className="pointer-events-none absolute bottom-3 left-3 inline-flex rounded-md bg-white/95 px-2 py-1.5 shadow-sm ring-1 ring-black/5 backdrop-blur-sm">
+          <PlatePreview
+            registration={previewReg}
+            style={product.id as PlateStyle}
+            size="sm"
+            compact
+          />
+        </span>
       </div>
 
       <div className="flex flex-1 flex-col p-6">

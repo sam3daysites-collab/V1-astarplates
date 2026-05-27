@@ -354,7 +354,7 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
               type="button"
               disabled={isFirstStep}
               onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
-              className="inline-flex items-center justify-center rounded-lg border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
+              className="touch-target inline-flex items-center justify-center rounded-lg border border-neutral-300 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-700 transition hover:border-[var(--brand-gold)] hover:text-[var(--brand-lime)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               ← Back
             </button>
@@ -363,13 +363,13 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
               <Link
                 href={canAddToCart ? cartHref : "#"}
                 aria-disabled={!canAddToCart}
-                className={`inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold text-white transition ${
+                className={`touch-target inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition ${
                   canAddToCart
-                    ? "bg-[var(--brand-lime)] hover:bg-[var(--brand-lime-hover)]"
-                    : "pointer-events-none bg-neutral-400"
+                    ? "bg-[var(--brand-gold)] text-[var(--brand-lime)] shadow-[0_14px_30px_-14px_rgba(212,175,55,0.6)] hover:bg-[#e6c14d]"
+                    : "pointer-events-none bg-neutral-200 text-neutral-500"
                 }`}
               >
-                Add configured plate to cart — {formatGBP(summary.total)}
+                Add to cart — {formatGBP(summary.total)} →
               </Link>
             ) : (
               <button
@@ -377,7 +377,7 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
                 onClick={() =>
                   setStepIndex((i) => Math.min(STEPS.length - 1, i + 1))
                 }
-                className="inline-flex items-center justify-center rounded-lg bg-[var(--brand-lime)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-lime-hover)]"
+                className="touch-target inline-flex items-center justify-center rounded-lg bg-[var(--brand-lime)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-lime-hover)]"
               >
                 Next →
               </button>
@@ -386,11 +386,16 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
         </div>
 
         {mode === "road-legal" ? (
-          <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-            <strong className="font-semibold">Document verification required.</strong>{" "}
+          <p className="rounded-xl border border-[var(--brand-gold)]/40 bg-[var(--brand-gold)]/[0.08] p-4 text-sm text-[var(--brand-lime)]">
+            <strong className="font-semibold">
+              Document verification required.
+            </strong>{" "}
             Road legal plates only enter production after we verify your ID and
             entitlement.{" "}
-            <Link href="/documents-required" className="underline underline-offset-2">
+            <Link
+              href="/documents-required"
+              className="underline underline-offset-2 hover:text-[var(--brand-lime-hover)]"
+            >
               What you&apos;ll need
             </Link>
             .
@@ -425,7 +430,7 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
       </aside>
 
       {/* Mobile sticky bottom bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white shadow-[0_-12px_30px_-20px_rgba(0,0,0,0.4)] lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--brand-gold)]/30 bg-white/95 shadow-[0_-12px_30px_-20px_rgba(26,46,5,0.4)] backdrop-blur-md lg:hidden">
         {mobileSummaryOpen && (
           <div className="max-h-[60vh] overflow-y-auto border-b border-neutral-200 px-4 py-4">
             <SummaryCard
@@ -449,25 +454,39 @@ export default function BuilderForm({ initialStyleId }: BuilderFormProps) {
           <button
             type="button"
             onClick={() => setMobileSummaryOpen((v) => !v)}
-            className="flex flex-col items-start"
+            aria-expanded={mobileSummaryOpen}
+            aria-label={
+              mobileSummaryOpen ? "Hide order summary" : "Show order summary"
+            }
+            className="touch-target flex items-center gap-2 rounded-lg px-2 py-1 text-left hover:bg-[var(--brand-cream)]"
           >
-            <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">
-              {mobileSummaryOpen ? "Hide summary" : "Show summary"}
+            <span
+              aria-hidden
+              className={`text-[10px] text-neutral-500 transition-transform ${
+                mobileSummaryOpen ? "rotate-180" : ""
+              }`}
+            >
+              ▲
             </span>
-            <span className="text-sm font-semibold text-neutral-900">
-              {formatGBP(summary.total)}
+            <span className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+                Total
+              </span>
+              <span className="text-lg font-bold text-[var(--brand-lime)]">
+                {formatGBP(summary.total)}
+              </span>
             </span>
           </button>
           <Link
             href={canAddToCart ? cartHref : "#"}
             aria-disabled={!canAddToCart}
-            className={`inline-flex flex-1 items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold text-white ${
+            className={`touch-target inline-flex flex-1 items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold transition ${
               canAddToCart
-                ? "bg-[var(--brand-lime)]"
-                : "pointer-events-none bg-neutral-400"
+                ? "bg-[var(--brand-gold)] text-[var(--brand-lime)] shadow-[0_10px_24px_-12px_rgba(212,175,55,0.6)]"
+                : "pointer-events-none bg-neutral-200 text-neutral-500"
             }`}
           >
-            Add to cart
+            Add to cart →
           </Link>
         </div>
       </div>
@@ -492,29 +511,37 @@ function StepNav({
       aria-label="Builder steps"
       className="-mx-6 overflow-x-auto px-6 lg:mx-0 lg:px-0"
     >
-      <ol className="flex min-w-max items-center gap-2 sm:gap-3">
+      <ol
+        className="snap-row flex min-w-max items-center gap-2 sm:gap-3"
+        style={{ scrollSnapType: "x proximity" }}
+      >
         {steps.map((step, idx) => {
           const isActive = idx === current;
           const isDone = idx < current;
           return (
-            <li key={step.id} className="flex items-center gap-2 sm:gap-3">
+            <li
+              key={step.id}
+              className="flex items-center gap-2 sm:gap-3"
+              style={{ scrollSnapAlign: "center" }}
+            >
               <button
                 type="button"
                 onClick={() => onSelect(idx)}
-                className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
+                aria-current={isActive ? "step" : undefined}
+                className={`touch-target flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold transition sm:text-sm ${
                   isActive
-                    ? "border-[var(--brand-lime)] bg-[var(--brand-lime)] text-white"
+                    ? "border-[var(--brand-gold)] bg-[var(--brand-lime)] text-white shadow-[0_0_0_3px_rgba(212,175,55,0.25)]"
                     : isDone
-                      ? "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-500 hover:border-neutral-900"
+                      ? "border-[var(--brand-lime)]/30 bg-white text-[var(--brand-lime)] hover:border-[var(--brand-gold)]"
+                      : "border-neutral-200 bg-[var(--brand-cream)] text-neutral-500 hover:border-[var(--brand-gold)] hover:text-[var(--brand-lime)]"
                 }`}
               >
                 <span
-                  className={`grid h-5 w-5 place-items-center rounded-full text-[10px] font-semibold ${
+                  className={`grid h-5 w-5 place-items-center rounded-full text-[10px] font-bold ${
                     isActive
-                      ? "bg-white text-[var(--brand-lime)]"
+                      ? "bg-[var(--brand-gold)] text-[var(--brand-lime)]"
                       : isDone
-                        ? "bg-emerald-600 text-white"
+                        ? "bg-[var(--brand-gold)] text-[var(--brand-lime)]"
                         : "bg-neutral-200 text-neutral-700"
                   }`}
                 >
@@ -523,7 +550,10 @@ function StepNav({
                 {step.label}
               </button>
               {idx < steps.length - 1 && (
-                <span aria-hidden className="h-px w-4 bg-neutral-300 sm:w-6" />
+                <span
+                  aria-hidden
+                  className={`h-px w-4 sm:w-6 ${isDone ? "bg-[var(--brand-gold)]" : "bg-neutral-300"}`}
+                />
               )}
             </li>
           );
@@ -557,56 +587,93 @@ function PreviewPanel({
   const showFront = frontIncluded(plateType);
   const showRear = rearIncluded(plateType);
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-[var(--brand-lime)] p-6 text-white sm:p-8">
-      <div className="flex items-center justify-between">
-        <p className="text-xs uppercase tracking-[0.3em] text-white/50">
+    <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-3 border-b border-neutral-200 bg-[var(--brand-cream)] px-6 py-3 sm:px-8">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--brand-lime)]/70">
           Live preview
         </p>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {isPlaceholder && (
+            <span className="hidden text-[10px] uppercase tracking-[0.2em] text-neutral-500 sm:inline">
+              Example reg
+            </span>
+          )}
           <span
-            className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+            className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1 ${
               mode === "show"
-                ? "bg-red-500/20 text-red-200 ring-1 ring-red-400/40"
-                : "bg-emerald-500/20 text-emerald-200 ring-1 ring-emerald-400/40"
+                ? "bg-red-50 text-red-700 ring-red-200"
+                : "bg-[var(--brand-gold)]/15 text-[var(--brand-lime)] ring-[var(--brand-gold)]/40"
             }`}
           >
             {mode === "show" ? "Show" : "Road legal"}
           </span>
-          {isPlaceholder && (
-            <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-              Example reg
-            </p>
-          )}
         </div>
       </div>
 
-      <div className="mt-8 flex flex-col items-center gap-6">
+      <div
+        className="flex flex-col items-center gap-6 px-6 py-8 sm:px-8 sm:py-10"
+        style={{
+          backgroundImage:
+            "radial-gradient(60% 70% at 50% 0%, rgba(212,175,55,0.10), transparent 60%)",
+        }}
+      >
         {showFront && (
-          <PlatePreview
-            registration={displayReg}
-            style={styleId}
-            mode={mode}
-            flag={flag}
-            showCountryCode={countryCode || undefined}
-            showCountryName={countryName}
-            size="lg"
-            position="front"
-            showPositionLabel={plateType === "pair"}
-          />
+          <div className="flex flex-col items-center gap-1.5">
+            {plateType === "pair" && (
+              <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--brand-lime)]/60">
+                Front
+              </span>
+            )}
+            <PlatePreview
+              registration={displayReg}
+              style={styleId}
+              mode={mode}
+              flag={flag}
+              showCountryCode={countryCode || undefined}
+              showCountryName={countryName}
+              size="lg"
+              position="front"
+            />
+          </div>
         )}
         {showRear && (
-          <PlatePreview
-            registration={displayReg}
-            style={styleId}
-            mode={mode}
-            flag={flag}
-            showCountryCode={countryCode || undefined}
-            showCountryName={countryName}
-            size="lg"
-            position="rear"
-            showPositionLabel={plateType === "pair"}
-          />
+          <div className="flex flex-col items-center gap-1.5">
+            {plateType === "pair" && (
+              <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--brand-lime)]/60">
+                Rear
+              </span>
+            )}
+            <PlatePreview
+              registration={displayReg}
+              style={styleId}
+              mode={mode}
+              flag={flag}
+              showCountryCode={countryCode || undefined}
+              showCountryName={countryName}
+              size="lg"
+              position="rear"
+            />
+          </div>
         )}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-neutral-200 bg-white px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-600 sm:px-8">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-gold)]" />
+          DVLA Registered
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-gold)]" />
+          BS AU 145e
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-gold)]" />
+          Secure Checkout
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-gold)]" />
+          Free Next-Day DPD
+        </span>
       </div>
     </div>
   );
@@ -647,19 +714,27 @@ function SummaryCard({
   canAddToCart: boolean;
   compact?: boolean;
 }) {
+  const pad = compact ? "px-4 py-4" : "px-6 py-5";
+  const headerPad = compact ? "px-4 py-3" : "px-6 py-3";
   return (
-    <div
-      className={`rounded-2xl border border-neutral-200 bg-white shadow-sm ${
-        compact ? "p-4" : "p-6"
-      }`}
-    >
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
-        Order summary
-      </p>
+    <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_20px_50px_-30px_rgba(26,46,5,0.35)]">
+      <div
+        className={`flex items-center justify-between gap-2 border-b border-neutral-200 bg-[var(--brand-cream)] ${headerPad}`}
+      >
+        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--brand-lime)]/70">
+          Order summary
+        </p>
+        <span className="rounded-full border border-[var(--brand-gold)]/50 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-lime)]">
+          Live
+        </span>
+      </div>
 
-      <dl className="mt-4 space-y-3 text-sm">
+      <div className={pad}>
+      <dl className="space-y-3 text-sm">
         <SummaryRow label="Registration">
-          <span className="font-mono">{displayReg}</span>
+          <span className="font-plate font-bold tracking-wider">
+            {displayReg}
+          </span>
           {isPlaceholder && (
             <span className="ml-1 text-[11px] text-neutral-500">(example)</span>
           )}
@@ -746,15 +821,16 @@ function SummaryCard({
         <Link
           href={canAddToCart ? cartHref : "#"}
           aria-disabled={!canAddToCart}
-          className={`mt-5 inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition ${
+          className={`touch-target mt-5 inline-flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold transition ${
             canAddToCart
-              ? "bg-[var(--brand-lime)] hover:bg-[var(--brand-lime-hover)]"
-              : "pointer-events-none bg-neutral-400"
+              ? "bg-[var(--brand-gold)] text-[var(--brand-lime)] shadow-[0_14px_30px_-14px_rgba(212,175,55,0.6)] hover:bg-[#e6c14d]"
+              : "pointer-events-none bg-neutral-200 text-neutral-500"
           }`}
         >
-          Add configured plate to cart
+          Add to cart →
         </Link>
       )}
+      </div>
     </div>
   );
 }
@@ -787,15 +863,21 @@ function Line({
 }) {
   return (
     <div
-      className={`flex items-center justify-between ${
+      className={`flex items-baseline justify-between ${
         emphasis
-          ? "border-t border-neutral-200 pt-3 text-base font-semibold text-neutral-900"
+          ? "mt-2 rounded-lg border border-[var(--brand-gold)]/40 bg-[var(--brand-gold)]/[0.08] px-3 py-3 text-base font-semibold text-[var(--brand-lime)]"
           : "text-neutral-700"
       }`}
     >
-      <span>{label}</span>
+      <span className={emphasis ? "text-[11px] uppercase tracking-[0.2em]" : ""}>
+        {label}
+      </span>
       <span
-        className={emphasis ? "text-neutral-900" : "font-medium text-neutral-900"}
+        className={
+          emphasis
+            ? "text-2xl font-bold text-[var(--brand-lime)]"
+            : "font-medium text-neutral-900"
+        }
       >
         {value}
       </span>
@@ -845,10 +927,10 @@ function RegStep({
         autoCorrect="off"
         autoComplete="off"
         inputMode="text"
-        className={`mt-2 w-full rounded-lg border bg-white px-4 py-3 font-mono text-xl uppercase tracking-[0.2em] text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-2 ${
+        className={`font-plate mt-2 w-full rounded-lg border bg-white px-4 py-4 text-2xl font-bold uppercase tracking-[0.12em] text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-2 sm:text-3xl ${
           error
             ? "border-red-500 focus:border-red-600 focus:ring-red-500/20"
-            : "border-neutral-300 focus:border-neutral-900 focus:ring-neutral-900/10"
+            : "border-neutral-300 focus:border-[var(--brand-gold)] focus:ring-[var(--brand-gold)]/25"
         }`}
       />
       {error ? (
@@ -863,7 +945,7 @@ function RegStep({
       {cleanReg && cleanReg !== value.toUpperCase().trim() && (
         <p className="mt-2 text-xs text-neutral-500">
           We&apos;ll press{" "}
-          <span className="font-mono font-semibold text-neutral-900">
+          <span className="font-plate font-bold text-neutral-900">
             {cleanReg}
           </span>
           .
@@ -893,8 +975,8 @@ function ModeStep({
           onClick={() => onSelect("road-legal")}
           className={`flex flex-col items-start rounded-xl border p-4 text-left transition ${
             value === "road-legal"
-              ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
-              : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+              ? "border-[var(--brand-lime)] bg-[var(--brand-gold)]/[0.08] ring-2 ring-[var(--brand-gold)] shadow-[0_0_0_4px_rgba(212,175,55,0.12)]"
+              : "border-neutral-200 bg-white hover:border-[var(--brand-gold)] hover:shadow-sm"
           }`}
         >
           <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
@@ -914,7 +996,7 @@ function ModeStep({
           className={`flex flex-col items-start rounded-xl border p-4 text-left transition ${
             value === "show"
               ? "border-red-500 bg-red-50 ring-2 ring-red-400/30"
-              : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+              : "border-neutral-200 bg-white hover:border-[var(--brand-gold)] hover:shadow-sm"
           }`}
         >
           <span className="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700">
@@ -954,8 +1036,8 @@ function StyleStep({
               key={p.id}
               className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${
                 checked
-                  ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
-                  : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+                  ? "border-[var(--brand-lime)] bg-[var(--brand-gold)]/[0.08] ring-2 ring-[var(--brand-gold)] shadow-[0_0_0_4px_rgba(212,175,55,0.12)]"
+                  : "border-neutral-200 bg-white hover:border-[var(--brand-gold)] hover:shadow-sm"
               }`}
             >
               <input
@@ -1015,8 +1097,8 @@ function PlateTypeStep({
                 disabled
                   ? "cursor-not-allowed border-neutral-200 bg-neutral-100/60 opacity-50"
                   : checked
-                    ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
-                    : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+                    ? "border-[var(--brand-lime)] bg-[var(--brand-gold)]/[0.08] ring-2 ring-[var(--brand-gold)] shadow-[0_0_0_4px_rgba(212,175,55,0.12)]"
+                    : "border-neutral-200 bg-white hover:border-[var(--brand-gold)] hover:shadow-sm"
               }`}
               title={
                 disabled
@@ -1089,8 +1171,8 @@ function SizeStep({
                 disabled
                   ? "cursor-not-allowed border-neutral-200 bg-neutral-100/60 opacity-50"
                   : checked
-                    ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
-                    : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+                    ? "border-[var(--brand-lime)] bg-[var(--brand-gold)]/[0.08] ring-2 ring-[var(--brand-gold)] shadow-[0_0_0_4px_rgba(212,175,55,0.12)]"
+                    : "border-neutral-200 bg-white hover:border-[var(--brand-gold)] hover:shadow-sm"
               }`}
               title={
                 isOut
@@ -1190,8 +1272,8 @@ function FlagStep({
               key={opt.id}
               className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${
                 checked
-                  ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05] ring-2 ring-[var(--brand-lime)]/15"
-                  : "border-neutral-200 bg-neutral-50 hover:border-neutral-900/40"
+                  ? "border-[var(--brand-lime)] bg-[var(--brand-gold)]/[0.08] ring-2 ring-[var(--brand-gold)] shadow-[0_0_0_4px_rgba(212,175,55,0.12)]"
+                  : "border-neutral-200 bg-white hover:border-[var(--brand-gold)] hover:shadow-sm"
               }`}
             >
               <input
@@ -1248,10 +1330,10 @@ function ExtrasStep({
           return (
             <div
               key={a.id}
-              className={`flex flex-col gap-3 rounded-xl border p-4 transition sm:flex-row sm:items-center sm:justify-between ${
+              className={`relative flex flex-col gap-3 rounded-xl border p-4 transition sm:flex-row sm:items-center sm:justify-between ${
                 s.selected
-                  ? "border-[var(--brand-lime)] bg-[var(--brand-lime)]/[0.05]"
-                  : "border-neutral-200 bg-neutral-50"
+                  ? "border-[var(--brand-lime)] bg-[var(--brand-gold)]/[0.08] shadow-[0_0_0_3px_rgba(212,175,55,0.10)]"
+                  : "border-neutral-200 bg-white hover:border-[var(--brand-gold)]"
               }`}
             >
               <label className="flex flex-1 cursor-pointer items-start gap-3">
@@ -1346,7 +1428,9 @@ function ReviewStep({
 
       <dl className="mt-6 divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-neutral-50">
         <ReviewRow label="Registration">
-          <span className="font-mono">{displayReg}</span>
+          <span className="font-plate font-bold tracking-wider">
+            {displayReg}
+          </span>
           {isPlaceholder && (
             <span className="ml-1 text-xs text-neutral-500">
               (example — type yours in step 1)

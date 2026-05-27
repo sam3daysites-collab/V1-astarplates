@@ -11,6 +11,7 @@ export const metadata = buildMetadata({
 export default function Page() {
   return (
     <CategoryPage
+      slug="motorbike-number-plates"
       eyebrow="Motorbike plates"
       title="Motorbike number plates — 237 × 178mm stacked rear"
       intro="The mandatory rear motorbike plate for any UK bike registered after 1 September 2001. Two-row Charles Wright font, BS AU 145e."

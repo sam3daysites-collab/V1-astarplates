@@ -11,6 +11,7 @@ export const metadata = buildMetadata({
 export default function Page() {
   return (
     <CategoryPage
+      slug="number-plate-clips"
       eyebrow="Plate clips"
       title="Number plate clips & brackets"
       intro="Clip-mount fittings are an alternative to screws or adhesive on certain vehicles with a bracket-style plate recess. Fit varies by car — get in touch first and we'll confirm what works."
