@@ -11,6 +11,7 @@ export const metadata = buildMetadata({
 export default function Page() {
   return (
     <CategoryPage
+      slug="import-number-plates"
       eyebrow="Import plates"
       title="Import number plates — for JDM, USDM and classic imports"
       intro="Two-row import plates designed for the smaller plate recesses on JDM, USDM and European imports. Choose 280 × 203mm or 330 × 178mm in the builder."

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ImageSlot from "./ImageSlot";
+import { getCategoryImages } from "@/data/siteImages";
 
 interface CategoryPageProps {
   eyebrow: string;
@@ -12,9 +13,13 @@ interface CategoryPageProps {
   secondaryCtaLabel?: string;
   body?: React.ReactNode;
   /**
-   * Optional gallery labels — when populated (later) the strip becomes a
-   * real image carousel. Defaults to 2 placeholder slots labelled by the
-   * eyebrow so the page never looks like a broken image grid.
+   * URL slug used to look up real images from the central manifest. When
+   * the manifest has no entry the page still renders two placeholder slots.
+   */
+  slug?: string;
+  /**
+   * Optional captions for the 2-slot gallery. Falls back to eyebrow-derived
+   * labels so the strip never looks like a broken image grid.
    */
   galleryLabels?: [string, string];
 }
@@ -29,12 +34,14 @@ export default function CategoryPage({
   secondaryCtaHref = "/contact",
   secondaryCtaLabel = "Contact us",
   body,
+  slug,
   galleryLabels,
 }: CategoryPageProps) {
   const labels: [string, string] = galleryLabels ?? [
     `${eyebrow} — overview`,
     `${eyebrow} — detail`,
   ];
+  const real = slug ? getCategoryImages(slug) : [];
 
   return (
     <>
@@ -70,18 +77,37 @@ export default function CategoryPage({
 
       <section className="bg-white">
         <div className="mx-auto max-w-4xl px-6 py-12 sm:py-16">
-          {/* Image strip — 2 placeholders, lazy. Becomes a real carousel later. */}
+          {/* Image strip — 2 slots. Real images render when the manifest has
+              entries for `slug`; otherwise placeholders. Both are lazy. */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {labels.map((label) => (
-              <ImageSlot
-                key={label}
-                kind="style"
-                ratio="4/3"
-                alt={label}
-                label={label}
-                rounded="xl"
-              />
-            ))}
+            {labels.map((label, i) => {
+              const img = real[i];
+              if (img) {
+                return (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={label}
+                    src={img.src}
+                    alt={img.alt}
+                    width={img.width}
+                    height={img.height}
+                    loading="lazy"
+                    decoding="async"
+                    className="aspect-[4/3] w-full rounded-xl border border-neutral-200 object-cover"
+                  />
+                );
+              }
+              return (
+                <ImageSlot
+                  key={label}
+                  kind="style"
+                  ratio="4/3"
+                  alt={label}
+                  label={label}
+                  rounded="xl"
+                />
+              );
+            })}
           </div>
 
           <ul className="mt-10 grid gap-3 text-sm text-neutral-700 sm:grid-cols-2">

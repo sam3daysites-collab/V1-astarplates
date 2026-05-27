@@ -4,6 +4,7 @@ import ImageSlot from "./ImageSlot";
 import ProductCard from "./ProductCard";
 import { PLATE_PRODUCTS, type PlateProduct } from "@/lib/products";
 import { formatGBP } from "@/lib/utils";
+import { getStyleImages } from "@/data/siteImages";
 
 interface ProductPageBodyProps {
   product: PlateProduct;
@@ -17,7 +18,7 @@ const GALLERY_LABELS = [
 ] as const;
 
 export default function ProductPageBody({ product }: ProductPageBodyProps) {
-  const images = product.images ?? [];
+  const images = getStyleImages(product.id);
   const relatedStyles = PLATE_PRODUCTS.filter((p) => p.id !== product.id);
 
   return (
@@ -159,14 +160,16 @@ export default function ProductPageBody({ product }: ProductPageBodyProps) {
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {GALLERY_LABELS.map((label, i) => {
-              const src = images[i];
-              if (src) {
+              const real = images[i];
+              if (real) {
                 return (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     key={label}
-                    src={src}
-                    alt={`${product.name} — ${label}`}
+                    src={real.src}
+                    alt={real.alt}
+                    width={real.width}
+                    height={real.height}
                     loading="lazy"
                     decoding="async"
                     className="aspect-[4/3] w-full rounded-2xl border border-neutral-200 object-cover"

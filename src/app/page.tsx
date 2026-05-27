@@ -6,6 +6,7 @@ import ImageSlot from "@/components/ImageSlot";
 import { PLATE_PRODUCTS } from "@/lib/products";
 import { buildMetadata } from "@/lib/seo";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/schema";
+import { getRecentFits, type RecentFit } from "@/data/siteImages";
 
 export const metadata = buildMetadata({
   title: "Premium UK Number Plates — Pressed Same Day",
@@ -19,13 +20,6 @@ const trustChips = [
   { label: "DVLA Verified", note: "Document checked" },
   { label: "Same-Day Press", note: "Order by 11am" },
   { label: "Free DPD", note: "Tracked next-day" },
-];
-
-const recentFits = [
-  { reg: "GT24 RBO", car: "Audi RS3", style: "4d-gel" as const },
-  { reg: "MX22 EVO", car: "Lamborghini Huracán", style: "4d" as const },
-  { reg: "AB73 XYZ", car: "BMW M3", style: "3d-gel" as const },
-  { reg: "RR21 SVR", car: "Range Rover Sport", style: "4d-retro" as const },
 ];
 
 const trustPoints = [
@@ -319,9 +313,10 @@ function StyleGrid() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Recent fits — placeholder slots, lazy. Mobile horizontal scroll.    */
+/* Recent fits — manifest-driven, placeholders until real photos land. */
 /* ------------------------------------------------------------------ */
 function RecentFits() {
+  const fits = getRecentFits(4);
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6">
@@ -349,7 +344,7 @@ function RecentFits() {
         {/* Mobile: snap row */}
         <div className="mt-10 -mx-6 px-6 sm:hidden">
           <div className="snap-row flex gap-4 overflow-x-auto pb-4">
-            {recentFits.map((fit) => (
+            {fits.map((fit) => (
               <RecentFitCard key={fit.reg} fit={fit} />
             ))}
           </div>
@@ -357,7 +352,7 @@ function RecentFits() {
 
         {/* sm+: grid */}
         <div className="mt-10 hidden grid-cols-2 gap-4 sm:grid sm:gap-6 lg:grid-cols-4">
-          {recentFits.map((fit) => (
+          {fits.map((fit) => (
             <RecentFitCard key={fit.reg} fit={fit} />
           ))}
         </div>
@@ -366,31 +361,40 @@ function RecentFits() {
   );
 }
 
-function RecentFitCard({
-  fit,
-}: {
-  fit: { reg: string; car: string; style: "4d-gel" | "4d" | "3d-gel" | "4d-retro" };
-}) {
+function RecentFitCard({ fit }: { fit: RecentFit }) {
   return (
     <figure className="group min-w-[70vw] flex-shrink-0 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:border-[var(--brand-gold)] sm:min-w-0">
-      <ImageSlot
-        kind="recent-fit"
-        alt={`${fit.car} fitted with ${fit.style} plate ${fit.reg}`}
-        label={fit.car}
-        rounded="md"
-        className="rounded-none border-0"
-      />
+      {fit.image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={fit.image.src}
+          alt={fit.image.alt}
+          width={fit.image.width}
+          height={fit.image.height}
+          loading="lazy"
+          decoding="async"
+          className="aspect-[4/3] w-full object-cover"
+        />
+      ) : (
+        <ImageSlot
+          kind="recent-fit"
+          alt={`${fit.vehicle} fitted with ${fit.styleId} plate ${fit.reg}`}
+          label={fit.vehicle}
+          rounded="md"
+          className="rounded-none border-0"
+        />
+      )}
       <figcaption className="flex items-center justify-between gap-2 px-4 py-3">
         <div>
           <p className="text-xs uppercase tracking-wider text-neutral-500">
-            {fit.car}
+            {fit.vehicle}
           </p>
           <p className="font-plate text-base font-bold tracking-wider text-neutral-900">
             {fit.reg}
           </p>
         </div>
         <span className="rounded-full border border-[var(--brand-gold)]/40 bg-[var(--brand-cream)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-lime)]">
-          {fit.style.replace("-", " ")}
+          {fit.styleId.replace("-", " ")}
         </span>
       </figcaption>
     </figure>

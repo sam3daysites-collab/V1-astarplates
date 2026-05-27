@@ -3,6 +3,7 @@ import PlatePreview, { type PlateStyle } from "./PlatePreview";
 import ImageSlot from "./ImageSlot";
 import type { PlateProduct } from "@/lib/products";
 import { formatGBP } from "@/lib/utils";
+import { getStyleImages } from "@/data/siteImages";
 
 interface ProductCardProps {
   product: PlateProduct;
@@ -12,16 +13,15 @@ interface ProductCardProps {
 /**
  * Premium plate card.
  *
- * Media area: a single image slot now (lazy placeholder) with a small
- * PlatePreview chip overlaid bottom-left for instant style recognition.
- * When `product.images` is populated, the first image becomes the primary
- * photo and a future gallery can be wired up without a layout shift.
+ * Media area pulls the first style image from the central manifest. If the
+ * manifest has no entry yet the card renders an ImageSlot placeholder so
+ * the layout is identical and there's no shift when real photos land.
  */
 export default function ProductCard({
   product,
   previewReg = "AB12 CDE",
 }: ProductCardProps) {
-  const hasImages = !!product.images && product.images.length > 0;
+  const primary = getStyleImages(product.id)[0];
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--brand-gold)] hover:shadow-[0_24px_60px_-32px_rgba(26,46,5,0.35)]">
@@ -32,13 +32,15 @@ export default function ProductCard({
         </span>
       )}
 
-      {/* Media: image slot (or first image when available) + plate chip */}
+      {/* Media: manifest image, or placeholder + plate chip. */}
       <div className="relative border-b border-neutral-200">
-        {hasImages ? (
+        {primary ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={product.images![0]}
-            alt={`${product.name} showcase`}
+            src={primary.src}
+            alt={primary.alt}
+            width={primary.width}
+            height={primary.height}
             loading="lazy"
             decoding="async"
             className="aspect-[4/3] w-full object-cover"

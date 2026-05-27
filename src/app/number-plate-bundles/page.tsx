@@ -11,6 +11,7 @@ export const metadata = buildMetadata({
 export default function Page() {
   return (
     <CategoryPage
+      slug="number-plate-bundles"
       eyebrow="Bundles"
       title="Plate + fitting bundles"
       intro="Most customers order a pair of plates plus the fittings to mount them. Build a pair in any of our 5 finishes and tick the fitting kit you want at the Extras step — everything ships together free, next day."

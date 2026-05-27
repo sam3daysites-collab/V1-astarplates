@@ -11,6 +11,7 @@ export const metadata = buildMetadata({
 export default function Page() {
   return (
     <CategoryPage
+      slug="number-plate-accessories"
       eyebrow="Accessories"
       title="Number plate fitting accessories"
       intro="Everything you need to fit your plates cleanly. We ship accessories with your plate order at no extra delivery cost. DVLA recommends adhesive strips over fixing kits for the cleanest finish."

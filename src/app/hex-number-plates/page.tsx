@@ -11,6 +11,7 @@ export const metadata = buildMetadata({
 export default function Page() {
   return (
     <CategoryPage
+      slug="hex-number-plates"
       eyebrow="Hex plates"
       title="Hex oversize rear number plates"
       intro="Our oversize 533 × 152mm rear plate with a hex finish detail — a distinctive variant for customers who want the bigger panel and a sharper edge."
