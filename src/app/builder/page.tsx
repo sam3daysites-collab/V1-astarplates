@@ -16,13 +16,14 @@ export default async function BuilderPage({ searchParams }: PageProps) {
   const { style } = await searchParams;
 
   return (
-    <section className="bg-neutral-50">
-      <div className="mx-auto max-w-7xl px-6 py-16">
+    <section className="bg-[var(--brand-cream)]">
+      <div className="mx-auto max-w-7xl px-6 py-12 sm:py-16">
         <header className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+          <p className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-gold)]/40 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.25em] text-[var(--brand-lime)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-gold)]" />
             Plate Builder
           </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
             Design your plate
           </h1>
           <p className="mt-4 text-neutral-600">
