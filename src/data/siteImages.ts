@@ -61,7 +61,13 @@ export interface RecentFit {
 /* Only the homepage entry should ever set `priority: true`.           */
 /* ------------------------------------------------------------------ */
 export const HERO_IMAGES: Record<string, SiteImage> = {
-  // "/": { src: "/images/hero/home.webp", alt: "...", category: "hero", priority: true, width: 1600, height: 900 },
+  "/": {
+    src: "/images/hero/a-star-number-plates-full-logo-hero.png",
+    alt: "A Star Number Plates logo",
+    category: "hero",
+    priority: true,
+    usage: ["homepage hero"],
+  },
 };
 
 /* ------------------------------------------------------------------ */
