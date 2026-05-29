@@ -61,7 +61,13 @@ export interface RecentFit {
 /* Only the homepage entry should ever set `priority: true`.           */
 /* ------------------------------------------------------------------ */
 export const HERO_IMAGES: Record<string, SiteImage> = {
-  // "/": { src: "/images/hero/home.webp", alt: "...", category: "hero", priority: true, width: 1600, height: 900 },
+  "/": {
+    src: "/images/hero/a-star-number-plates-full-logo-hero.png",
+    alt: "A Star Number Plates logo",
+    category: "hero",
+    priority: true,
+    usage: ["homepage hero"],
+  },
 };
 
 /* ------------------------------------------------------------------ */
@@ -82,7 +88,7 @@ export const STYLE_GALLERIES: Record<PlateProductId, SiteImage[]> = {
 export const CATEGORY_GALLERIES: Record<string, SiteImage[]> = {
   "oversize-number-plates": [
     {
-      src: "/images/categories/oversize-number-plates/oversize-number-plate-yellow.webp",
+      src: "/images/categories/oversize-number-plates/oversize-number-plate-yellow.png",
       alt: "Oversize yellow number plate example by A Star Number Plates",
       caption: "Oversize rear plate example",
       category: "category",
@@ -91,7 +97,7 @@ export const CATEGORY_GALLERIES: Record<string, SiteImage[]> = {
   "hex-number-plates": [],
   "import-number-plates": [
     {
-      src: "/images/categories/import-number-plates/import-number-plate-square-yellow.webp",
+      src: "/images/categories/import-number-plates/import-number-plate-square-yellow.png",
       alt: "Square import number plate example by A Star Number Plates",
       caption: "Import-size plate example",
       category: "category",
@@ -99,7 +105,7 @@ export const CATEGORY_GALLERIES: Record<string, SiteImage[]> = {
   ],
   "motorbike-number-plates": [
     {
-      src: "/images/categories/motorbike-number-plates/motorbike-number-plate-yellow.webp",
+      src: "/images/categories/motorbike-number-plates/motorbike-number-plate-yellow.png",
       alt: "Motorbike number plate example by A Star Number Plates",
       caption: "Motorbike plate example",
       category: "category",

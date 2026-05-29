@@ -3,10 +3,11 @@ import PlatePreview from "@/components/PlatePreview";
 import ProductCard from "@/components/ProductCard";
 import FAQSection from "@/components/FAQSection";
 import ImageSlot from "@/components/ImageSlot";
+import HeroImage from "@/components/HeroImage";
 import { PLATE_PRODUCTS } from "@/lib/products";
 import { buildMetadata } from "@/lib/seo";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/schema";
-import { getRecentFits, type RecentFit } from "@/data/siteImages";
+import { getHero, getRecentFits, type RecentFit } from "@/data/siteImages";
 
 export const metadata = buildMetadata({
   title: "Premium UK Number Plates — Pressed Same Day",
@@ -168,32 +169,27 @@ function Hero() {
             className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-[var(--brand-gold)]/15 via-transparent to-[var(--brand-lime)]/5 blur-2xl"
           />
           <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_30px_80px_-40px_rgba(26,46,5,0.4)] sm:p-8">
-            <div className="flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--brand-lime)]/60">
-                Live Preview
-              </p>
-              <span className="rounded-full border border-[var(--brand-gold)]/50 bg-[var(--brand-cream)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-lime)]">
-                4D Gel · pair
+            <div
+              className="rounded-2xl border border-neutral-200 bg-[var(--brand-cream)] p-6 sm:p-8"
+              style={{
+                backgroundImage:
+                  "radial-gradient(60% 70% at 50% 30%, rgba(212,175,55,0.10), transparent 65%)",
+              }}
+            >
+              <HeroImage image={getHero("/")} />
+            </div>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-600">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-gold)]" />
+                BS AU 145e
               </span>
-            </div>
-            <div className="mt-6 flex flex-col items-center gap-5">
-              <PlatePreview
-                registration="A★ 1"
-                style="4d-gel"
-                size="lg"
-                position="front"
-              />
-              <PlatePreview
-                registration="A★ 1"
-                style="4d-gel"
-                size="lg"
-                position="rear"
-              />
-            </div>
-            <div className="mt-8 flex items-center justify-between rounded-xl border border-neutral-200 bg-[var(--brand-cream)] px-4 py-3 text-sm">
-              <span className="text-neutral-600">4D Gel pair, road legal</span>
-              <span className="font-semibold text-[var(--brand-lime)]">
-                £37.99
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-gold)]" />
+                DVLA Registered
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-gold)]" />
+                Free Next-Day DPD
               </span>
             </div>
           </div>
